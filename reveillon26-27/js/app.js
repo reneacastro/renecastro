@@ -377,7 +377,7 @@ function cardCasa(casa) {
 
 function camasSub(casa) {
   var ac = analiseCamas(casa);
-  if (ac.foraDoQuarto) return '+' + ac.foraDoQuarto + ' em sofá = ' + (casa.capacidade.camas + ac.foraDoQuarto) + ' lugares';
+  if (ac.foraDoQuarto) return '+' + ac.foraDoQuarto + ' sofás = ' + (casa.capacidade.camas + ac.foraDoQuarto) + ' lugares';
   return 'para ' + GRUPO + ' pessoas';
 }
 
@@ -470,7 +470,7 @@ function renderCmp() {
       sub: function (c) {
         var ac = analiseCamas(c), lug = c.capacidade.camas + ac.foraDoQuarto;
         if (c.capacidade.camas >= GRUPO) return 'cama de verdade para cada um';
-        return (ac.foraDoQuarto ? '+' + ac.foraDoQuarto + ' em sofá = ' + lug + ' lugares; ' : '') +
+        return (ac.foraDoQuarto ? '+' + ac.foraDoQuarto + ' sofás = ' + lug + ' lugares; ' : '') +
                (lug >= GRUPO ? 'dá para todos, contando sofá' : (GRUPO - lug) + ' pessoas em colchão');
       },
       melhor: 'max', num: function (c) { return c.capacidade.camas; } },
