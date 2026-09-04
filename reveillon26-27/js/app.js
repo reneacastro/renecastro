@@ -120,6 +120,24 @@ function achaRegra(casa, re) {
   return r.length ? r[0] : null;
 }
 
+// o total de "camas" do anúncio junta cama de quarto com sofá de sala.
+// para 13 pessoas essa diferença é o que decide quem dorme bem.
+function analiseCamas(casa) {
+  var emQuarto = 0, foraDoQuarto = 0, comodos = 0;
+  (casa.quartos || []).forEach(function (q) {
+    var ehQuarto = /^quarto/i.test(q.n || '');
+    if (ehQuarto) comodos++;
+    (q.d || '').split('·').forEach(function (parte) {
+      var m = parte.match(/(\d+)\s*(camas?|sof[áa]s?|colch[õo]es?|colch[ãa]o)/i);
+      if (!m) return;
+      var n = Number(m[1]);
+      if (ehQuarto && /cama/i.test(m[2])) emQuarto += n;
+      else foraDoQuarto += n;
+    });
+  });
+  return { emQuarto: emQuarto, foraDoQuarto: foraDoQuarto, comodos: comodos };
+}
+
 /* pontos de atenção — derivados por regra, valem para qualquer casa nova */
 function atencoes(casa) {
   var out = [], rs = regrasFlat(casa);
@@ -129,9 +147,26 @@ function atencoes(casa) {
       d: 'O anúncio limita a <b>' + casa.capacidade.maxHospedes + ' hóspedes</b> e somos ' + GRUPO +
          '. Faltam ' + (GRUPO - casa.capacidade.maxHospedes) + ' vagas — teria que negociar com o anfitrião ou alguém ficar fora.' });
   }
+  var ac = analiseCamas(casa);
   if (casa.capacidade.camas != null && casa.capacidade.camas < GRUPO) {
-    out.push({ i: '🛏️', t: 'Menos camas que gente',
-      d: '<b>' + casa.capacidade.camas + ' camas</b> para ' + GRUPO + ' pessoas. Vai ter gente dividindo cama ou dormindo em colchão.' });
+    var lugares = casa.capacidade.camas + ac.foraDoQuarto;
+    var d = '<b>' + casa.capacidade.camas + ' camas</b>' +
+            (ac.comodos ? ' em ' + ac.comodos + (ac.comodos === 1 ? ' quarto' : ' quartos') : '') +
+            ' para ' + GRUPO + ' pessoas.';
+    if (ac.foraDoQuarto) {
+      d += ' As salas somam mais ' + ac.foraDoQuarto + ' lugares de dormir — mesmo contando tudo, são ' +
+           lugares + ' para ' + GRUPO + '.';
+    }
+    d += lugares < GRUPO
+      ? ' Faltam ' + (GRUPO - lugares) + ': alguém dorme em colchão.'
+      : ' Parte do grupo dorme em sofá de sala.';
+    out.push({ i: '🛏️', t: 'Menos camas que gente', d: d });
+  }
+  if (ac.comodos && casa.capacidade.quartos > ac.comodos) {
+    out.push({ i: '🚪', t: 'O anúncio conta mais quartos do que mostra',
+      d: 'Diz <b>' + casa.capacidade.quartos + ' quartos</b>, mas em “Onde você vai dormir” só ' +
+         (ac.comodos === 1 ? 'aparece 1' : 'aparecem ' + ac.comodos) +
+         ' — o lugar que sobra é sala de estar com sofá, não quarto. Vale confirmar com a anfitriã.' });
   }
   if (casa.capacidade.banheiros == null) {
     var amb = contaAmbientes(casa);
@@ -168,10 +203,10 @@ function atencoes(casa) {
 function selo(casa, todas) {
   var maisBarata = todas.slice().sort(function (a, b) { return a.preco.total - b.preco.total; })[0];
   var cabe = casa.capacidade.maxHospedes >= GRUPO;
-  if (cabe && casa.capacidade.camas >= GRUPO) return { t: 'Cabe os ' + GRUPO + ', com cama para cada um', k: 'ok' };
-  if (cabe) return { t: 'Cabe os ' + GRUPO, k: 'ok' };
+  if (cabe && casa.capacidade.camas >= GRUPO) return { t: 'Cabem os ' + GRUPO + ', com cama para cada um', k: 'ok' };
+  if (cabe) return { t: 'Cabem os ' + GRUPO, k: 'ok' };
   if (casa.id === maisBarata.id) return { t: 'A mais barata — mas não cabe todo mundo', k: 'warn' };
-  return { t: 'Não cabe os ' + GRUPO, k: 'danger' };
+  return { t: 'Não cabem os ' + GRUPO, k: 'danger' };
 }
 
 /* ---------------------- HERO ---------------------- */
@@ -211,7 +246,7 @@ function calloutDecisao() {
       (naoCabem.length > 1 ? 'essas casas' : 'essa casa') + ' não comporta' + (naoCabem.length > 1 ? 'm' : '') +
       ' o grupo sem negociar com o anfitrião.</p>';
   if (cabem.length) {
-    txt += '<p>Cabe' + (cabem.length > 1 ? 'm' : '') + ' os ' + GRUPO + ': ' +
+    txt += '<p>' + (cabem.length > 1 ? 'Cabem' : 'Cabe') + ' o grupo inteiro: ' +
       cabem.map(function (c) { return '<strong>' + esc(c.apelido) + '</strong>'; }).join(', ') + '.</p>';
   }
   return txt + '</div></div>';
@@ -269,7 +304,7 @@ function cardCasa(casa) {
       '<div class="stats">' +
         stat(cap.maxHospedes + ' hóspedes', 'limite do anúncio', cap.maxHospedes < GRUPO ? 'is-alert' : 'is-good') +
         stat(cap.quartos + ' quartos', 'dormitórios') +
-        stat(cap.camas + ' camas', 'para ' + GRUPO + ' pessoas', cap.camas < GRUPO ? 'is-alert' : 'is-good') +
+        stat(cap.camas + ' camas', camasSub(casa), cap.camas < GRUPO ? 'is-alert' : 'is-good') +
         stat(cap.banheiros == null ? 'não informado' : String(cap.banheiros).replace('.', ',') + ' banheiros', 'sanitários', cap.banheiros == null ? 'is-alert' : 'is-good') +
         stat(String(casa.distancia.km).replace('.', ',') + ' km', 'de São Caetano') +
         stat(tempo(casa.distancia.min), 'de carro, sem trânsito') +
@@ -331,6 +366,12 @@ function cardCasa(casa) {
   return node;
 }
 
+function camasSub(casa) {
+  var ac = analiseCamas(casa);
+  if (ac.foraDoQuarto) return '+' + ac.foraDoQuarto + ' em sofá = ' + (casa.capacidade.camas + ac.foraDoQuarto) + ' lugares';
+  return 'para ' + GRUPO + ' pessoas';
+}
+
 function stat(b, s, cls) {
   return '<div class="stat ' + (cls || '') + '"><b>' + esc(b) + '</b><span>' + esc(s) + '</span></div>';
 }
@@ -349,7 +390,8 @@ function ambientesHTML(casa) {
     }).join('') +
     '<button type="button" data-amb="' + esc(casa.id) + '" data-amb-nome="">Todas <i>' + casa.fotos.length + '</i></button>' +
     '</div>' +
-    (semTag > 0 ? '<p class="cmp-note">' + semTag + ' fotos não vêm etiquetadas pelo Airbnb, e uma mesma foto pode contar em dois ambientes. Em “Todas” aparecem as ' + casa.fotos.length + '.</p>' : '');
+    (semTag > 0 ? '<p class="cmp-note">' + semTag + (semTag === 1 ? ' foto não vem etiquetada' : ' fotos não vêm etiquetadas') +
+      ' pelo Airbnb, e uma mesma foto pode contar em dois ambientes. Em “Todas” aparecem as ' + casa.fotos.length + '.</p>' : '');
 }
 
 function comodidadesHTML(casa) {
@@ -412,11 +454,16 @@ function renderCmp() {
     { k: 'Preço total', v: function (c) { return brl(c.preco.total); },
       sub: function (c) { return c.datas.noites + ' noites · ' + brl(c.preco.total / c.datas.noites, 2) + ' por noite'; },
       melhor: 'min', num: function (c) { return c.preco.total; } },
-    { k: 'Cabe os ' + GRUPO + '?', v: function (c) { return c.capacidade.maxHospedes >= GRUPO ? 'Sim' : 'Não'; },
+    { k: 'Cabem os ' + GRUPO + '?', v: function (c) { return c.capacidade.maxHospedes >= GRUPO ? 'Sim' : 'Não'; },
       sub: function (c) { return 'limite de ' + c.capacidade.maxHospedes + ' hóspedes'; },
       melhor: 'max', num: function (c) { return Math.min(c.capacidade.maxHospedes, GRUPO); } },
     { k: 'Camas', v: function (c) { return c.capacidade.camas + ' camas'; },
-      sub: function (c) { return c.capacidade.camas >= GRUPO ? 'cama para cada um' : (GRUPO - c.capacidade.camas) + ' pessoas sem cama própria'; },
+      sub: function (c) {
+        var ac = analiseCamas(c), lug = c.capacidade.camas + ac.foraDoQuarto;
+        if (c.capacidade.camas >= GRUPO) return 'cama de verdade para cada um';
+        return (ac.foraDoQuarto ? '+' + ac.foraDoQuarto + ' em sofá = ' + lug + ' lugares; ' : '') +
+               (lug >= GRUPO ? 'dá para todos, contando sofá' : (GRUPO - lug) + ' pessoas em colchão');
+      },
       melhor: 'max', num: function (c) { return c.capacidade.camas; } },
     { k: 'Banheiros', v: function (c) { return c.capacidade.banheiros == null ? 'não informado' : String(c.capacidade.banheiros).replace('.', ','); },
       sub: function (c) { return c.capacidade.banheiros == null ? 'anúncio em branco' : (Math.round(GRUPO / c.capacidade.banheiros * 10) / 10).toString().replace('.', ',') + ' pessoas por banheiro'; },
