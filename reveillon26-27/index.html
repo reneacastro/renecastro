@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réveillon 2026 › 2027 — a casa da virada</title>
+<meta name="description" content="Comparativo das casas candidatas para o réveillon 2026/2027 do grupo. Preço por pessoa, distância, estrutura, avaliações reais e votação.">
+<meta name="theme-color" content="#e0245e">
+<meta property="og:title" content="Réveillon 2026 › 2027 — a casa da virada">
+<meta property="og:description" content="As casas na mesa, lado a lado. Compare e vote na sua favorita.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎆</text></svg>">
+<link rel="preconnect" href="https://a0.muscache.com" crossorigin>
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/app.css?v=4">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="#topo"><span class="dot" aria-hidden="true"></span> Réveillon 26›27</a>
+    <nav class="topnav" id="topnav" aria-label="Seções">
+      <a href="#casas">Casas</a>
+      <a href="#comparativo">Comparativo</a>
+      <a href="#gente">Quem vai</a>
+      <a href="#votacao">Votação</a>
+    </nav>
+  </div>
+</header>
+
+<main id="topo">
+  <section class="wrap hero" id="hero"></section>
+
+  <section class="wrap sec" id="casas">
+    <div class="sec-head">
+      <p class="eyebrow">As candidatas</p>
+      <h2>As casas na mesa</h2>
+      <p>Tudo aqui foi puxado direto do anúncio no Airbnb — fotos, comodidades, regras e avaliações de quem já ficou. Clique em qualquer foto para ver a galeria inteira.</p>
+    </div>
+    <div class="casas" id="lista-casas"></div>
+  </section>
+
+  <section class="wrap sec" id="comparativo">
+    <div class="sec-head">
+      <p class="eyebrow">Lado a lado</p>
+      <h2>Comparativo direto</h2>
+      <p>Os mesmos critérios para todas. Verde é o melhor da linha; vermelho é onde a casa perde.</p>
+    </div>
+    <div class="cmp-scroll"><table class="cmp" id="tabela-cmp"></table></div>
+    <p class="cmp-note" id="cmp-note"></p>
+  </section>
+
+  <section class="wrap sec" id="gente">
+    <div class="sec-head">
+      <p class="eyebrow">A turma</p>
+      <h2>Quem vai</h2>
+      <p id="gente-sub"></p>
+    </div>
+    <div class="gente" id="lista-gente"></div>
+  </section>
+
+  <section class="wrap sec" id="votacao">
+    <div class="sec-head">
+      <p class="eyebrow">Decisão</p>
+      <h2>Vote na sua favorita</h2>
+      <p>Escolha seu nome, escolha a casa. Dá para trocar o voto quantas vezes quiser até fechar — vale o último.</p>
+    </div>
+    <div class="voto-grid">
+      <form class="card voto-box" id="form-voto" novalidate></form>
+      <div class="card placar" id="placar"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p id="foot-info"></p>
+    <p>Preços, fotos e avaliações foram lidos dos anúncios do Airbnb. Confira sempre no anúncio antes de reservar — valor e disponibilidade mudam.</p>
+    <p><a href="https://renecastro.com.br">renecastro.com.br</a></p>
+  </div>
+</footer>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="js/config.js?v=4"></script>
+<script src="js/dados.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
+</body>
+</html>
