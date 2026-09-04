@@ -527,6 +527,8 @@ function renderCmp() {
 
   t.innerHTML = head + body;
 
+  atualizaDicaTabela();
+
   var maisBarata = cs.slice().sort(function (a, b) { return porPessoa(a) - porPessoa(b); })[0];
   var dif = Math.abs(porPessoa(cs[cs.length - 1]) - porPessoa(cs[0]));
   document.getElementById('cmp-note').innerHTML =
@@ -539,6 +541,14 @@ function renderCmp() {
 
 // olha só as comodidades estruturadas; a descrição é texto livre e dá falso
 // positivo (a de Campinas cita "Lagoa do Taquaral" e casava com /lago/)
+function atualizaDicaTabela() {
+  var box = document.querySelector('.cmp-scroll');
+  var dica = document.getElementById('cmp-dica');
+  if (!box || !dica) return;
+  var rola = box.scrollWidth > box.clientWidth + 2;
+  dica.classList.toggle('on', rola && box.scrollLeft < 4);
+}
+
 function temAmen(casa, re, olharDescricao) {
   var nasComodidades = casa.comodidades.some(function (g) {
     return g.i.some(function (a) { return re.test(a.n); });
@@ -648,6 +658,21 @@ function abrirGaleria(todas, titulo, idx) {
     if (k != null) mostra(Number(k));
   });
   document.addEventListener('keydown', key);
+
+  // no celular a seta é pequena e fica no canto: arrastar é o gesto natural
+  var toqueX = 0, toqueY = 0, arrastando = false;
+  var stage = node.querySelector('.lb-stage');
+  stage.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) return;
+    toqueX = e.touches[0].clientX; toqueY = e.touches[0].clientY; arrastando = true;
+  }, { passive: true });
+  stage.addEventListener('touchend', function (e) {
+    if (!arrastando) return;
+    arrastando = false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - toqueX, dy = t.clientY - toqueY;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) mostra(i + (dx < 0 ? 1 : -1));
+  }, { passive: true });
 
   document.body.appendChild(node);
   document.body.classList.add('no-scroll');
@@ -1047,6 +1072,11 @@ function ligarEventos() {
     var rev = t.closest && t.closest('.rev-t');
     if (rev) rev.classList.toggle('clamp');
   });
+
+  var cmpBox = document.querySelector('.cmp-scroll');
+  if (cmpBox) on(cmpBox, 'scroll', atualizaDicaTabela, { passive: true });
+  on(window, 'resize', atualizaDicaTabela);
+  on(window, 'orientationchange', function () { setTimeout(atualizaDicaTabela, 250); });
 
   var f = document.getElementById('form-voto');
   on(f, 'submit', submeterVoto);

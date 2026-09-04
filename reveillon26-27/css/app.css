@@ -19,7 +19,7 @@
 .topnav a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 
 /* =============== HERO =============== */
-.hero { padding: 44px 0 12px; }
+.hero { padding-top: 44px; padding-bottom: 12px; }
 .hero h1 {
   font-size: clamp(30px, 6.4vw, 54px); line-height: 1.06; letter-spacing: -.035em;
   font-weight: 800; margin: 8px 0 14px; max-width: 16ch;
@@ -276,7 +276,7 @@ table.cmp .sub { display: block; font-size: 12.5px; color: var(--muted); font-we
 .modal-f { padding: 16px 20px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
 
 /* =============== RODAPÉ =============== */
-.foot { margin-top: 64px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.65; }
+.foot { margin-top: 64px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; line-height: 1.65; padding-bottom: max(40px, env(safe-area-inset-bottom)); }
 .foot a { color: var(--muted); }
 .foot p { margin: 0 0 6px; }
 
@@ -285,8 +285,19 @@ table.cmp .sub { display: block; font-size: 12.5px; color: var(--muted); font-we
   .voto-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
-  :root { --pad: 16px; }
-  .sec { padding: 42px 0 4px; }
+  :root { --pad: 20px; }
+  .sec { padding-top: 42px; padding-bottom: 4px; }
+  .hero { padding-top: 30px; padding-bottom: 8px; }
+  /* o card ocupa a largura toda e o texto dele alinha com o resto da página */
+  .casa {
+    margin-left: calc(var(--pad) * -1);
+    margin-right: calc(var(--pad) * -1);
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+  .casa-body { padding-left: var(--pad); padding-right: var(--pad); }
+  .cmp-scroll { border-radius: var(--r-md); }
   .gal { grid-template-columns: 1fr 1fr; grid-template-rows: 1.5fr 1fr; aspect-ratio: 1.25 / 1; gap: 4px; }
   .gal-i:first-of-type { grid-column: span 2; grid-row: auto; }
   .gal-i:nth-of-type(n+4) { display: none; }
@@ -297,7 +308,6 @@ table.cmp .sub { display: block; font-size: 12.5px; color: var(--muted); font-we
   .casa-cta .btn { width: 100%; }
   .lb-nav { width: 38px; height: 38px; }
   .lb-thumbs img { width: 60px; height: 44px; }
-  .hero { padding: 30px 0 8px; }
   .revs { grid-template-columns: 1fr; }
 }
 @media (max-width: 420px) {
@@ -338,3 +348,28 @@ table.cmp .sub { display: block; font-size: 12.5px; color: var(--muted); font-we
 .av { position: relative; overflow: hidden; }
 .av > b { font-weight: 700; line-height: 1; color: #fff; }
 .av > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* =============== TOQUE =============== */
+/* dedo não acerta alvo de 35px: no toque tudo que é clicável vai a 44px */
+@media (pointer: coarse) {
+  .topnav a,
+  .btn-sm,
+  .ambientes button,
+  .lb-chip { min-height: 44px; display: inline-flex; align-items: center; }
+  .casa-stars a { display: inline-block; padding: 11px 0; }
+  .lb-nav { width: 48px; height: 48px; font-size: 22px; }
+  .brand { padding: 9px 0; }
+  .rev-t { padding: 2px 0; }
+}
+
+/* dica de que o comparativo rola de lado — só aparece quando rola de fato */
+.cmp-dica {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.cmp-dica.on { display: flex; }
+.cmp-dica span { font-size: 15px; }
