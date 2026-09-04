@@ -78,20 +78,19 @@ function el(html) { var t = document.createElement('template'); t.innerHTML = ht
 function corDe(txt) {
   var h = 0;
   for (var i = 0; i < txt.length; i++) h = (h * 31 + txt.charCodeAt(i)) % 360;
-  return 'hsl(' + h + ' 52% 42%)';
+  // amarelos parecem mais claros que azuis na mesma luminosidade; sem compensar,
+  // a inicial branca fica com contraste abaixo de 4,5:1 nesses matizes
+  var claro = Math.max(0, Math.cos((h - 60) * Math.PI / 180));
+  return 'hsl(' + h + ' 52% ' + (32 - claro * 5).toFixed(1) + '%)';
 }
+// a inicial fica sempre embaixo; a foto entra por cima quando o arquivo existe.
+// nada de onerror: com loading="lazy" ele pode nem disparar, e aí sobra um buraco.
 function avatarHTML(p, cls) {
-  var c = 'av ' + (cls || '');
-  return '<img class="' + c + '" src="fotos/' + esc(p.slug) + '.jpg" alt="" loading="lazy" ' +
-         'style="background:' + corDe(p.nome) + '" ' +
-         'onerror="this.onerror=null;this.replaceWith(window.__avFallback(' + JSON.stringify(JSON.stringify({ n: p.nome, c: c })).replace(/"/g, '&quot;') + '))">';
+  return '<span class="av ' + (cls || '') + '" style="background:' + corDe(p.nome) + '" aria-hidden="true">' +
+           '<b>' + esc(p.nome.trim().charAt(0)) + '</b>' +
+           '<img src="fotos/' + esc(p.slug) + '.jpg" alt="" onerror="this.remove()">' +
+         '</span>';
 }
-window.__avFallback = function (json) {
-  var o = JSON.parse(json), d = document.createElement('div');
-  d.className = o.c; d.style.background = corDe(o.n); d.setAttribute('aria-hidden', 'true');
-  d.textContent = o.n.trim().charAt(0);
-  return d;
-};
 function fotoOuInicial(url, nome, cls, tam) {
   if (url) return '<img class="' + cls + '" src="' + esc(img(url, tam || 120)) + '" alt="" loading="lazy">';
   return '<div class="ph ' + cls + '" style="background:' + corDe(nome || '?') + ';color:#fff;display:grid;place-items:center;font-weight:700">' +
@@ -503,7 +502,7 @@ function renderGente(votos) {
     return '<a class="pessoa" href="https://www.instagram.com/' + esc(p.ig) + '/" target="_blank" rel="noopener" title="Abrir o Instagram de ' + esc(p.nome) + '">' +
       avatarHTML(p) +
       '<b>' + esc(p.nome) + '</b>' +
-      '<span>@' + esc(p.ig) + '</span>' +
+      '<span class="ig">@' + esc(p.ig) + '</span>' +
       (casa ? '<span class="badge badge-accent voto-tag">votou ' + esc(casa.apelido) + '</span>' : '') +
     '</a>';
   }).join('');
