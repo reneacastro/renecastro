@@ -54,6 +54,12 @@ troque por:
 
 ## Fotos de perfil
 
-A página procura `fotos/<slug>.jpg` para cada pessoa (o `slug` está em
-`DADOS.pessoas`). Se o arquivo não existir, ela usa um avatar com a inicial e uma
-cor estável por nome. É só jogar os arquivos na pasta — nenhum código muda.
+Cada pessoa tem um avatar com a inicial e uma cor estável por nome. Para trocar
+por uma foto de verdade:
+
+1. salve o arquivo como `fotos/<slug>.jpg` (o `slug` está em `DADOS.pessoas`)
+2. acrescente o slug em `temFoto`, dentro de `fotos/manifest.json`
+
+O manifesto existe para a página não pedir 13 arquivos que talvez não estejam
+lá — sem ele, o console enche de 404. Quem não estiver na lista continua com a
+inicial, sem nenhuma requisição.

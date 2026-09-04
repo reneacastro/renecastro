@@ -83,12 +83,21 @@ function corDe(txt) {
   var claro = Math.max(0, Math.cos((h - 60) * Math.PI / 180));
   return 'hsl(' + h + ' 52% ' + (32 - claro * 5).toFixed(1) + '%)';
 }
-// a inicial fica sempre embaixo; a foto entra por cima quando o arquivo existe.
-// nada de onerror: com loading="lazy" ele pode nem disparar, e aí sobra um buraco.
+// fotos/manifest.json diz quem já tem foto. Sem ele a página pediria
+// fotos/<slug>.jpg de todo mundo e encheria o console de 404.
+var COM_FOTO = {};
+function carregaManifesto() {
+  return fetch('fotos/manifest.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : { temFoto: [] }; })
+    .then(function (m) { (m.temFoto || []).forEach(function (slug) { COM_FOTO[slug] = true; }); })
+    .catch(function () { /* sem manifesto, todo mundo fica na inicial */ });
+}
+
+// a inicial fica sempre embaixo; a foto entra por cima de quem tiver
 function avatarHTML(p, cls) {
   return '<span class="av ' + (cls || '') + '" style="background:' + corDe(p.nome) + '" aria-hidden="true">' +
            '<b>' + esc(p.nome.trim().charAt(0)) + '</b>' +
-           '<img src="fotos/' + esc(p.slug) + '.jpg" alt="" onerror="this.remove()">' +
+           (COM_FOTO[p.slug] ? '<img src="fotos/' + esc(p.slug) + '.jpg" alt="" onerror="this.remove()">' : '') +
          '</span>';
 }
 function fotoOuInicial(url, nome, cls, tam) {
@@ -1083,6 +1092,8 @@ function init() {
     'Página feita para o grupo — ' + GRUPO + ' pessoas, ' + D.casas.length + ' casa' + (D.casas.length > 1 ? 's' : '') +
     ', ' + dataLonga(D.evento.checkin) + ' a ' + dataLonga(D.evento.checkout) + '. ' +
     'Distâncias calculadas por rota de carro a partir de São Caetano do Sul.';
+
+  carregaManifesto().then(function () { renderGente(VOTOS); });
 
   criarStore().then(function (s) {
     STORE = s;

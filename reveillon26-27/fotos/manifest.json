@@ -1,0 +1,4 @@
+{
+  "_comentario": "Slugs que têm foto nesta pasta. Sem isso a página tentaria carregar fotos/<slug>.jpg de todo mundo e encheria o console de 404. Ao adicionar uma foto, acrescente o slug aqui.",
+  "temFoto": []
+}
