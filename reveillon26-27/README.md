@@ -33,24 +33,43 @@ o grupo, menos camas que gente, banheiro não informado, proibição de festa,
 horário de silêncio, falta de detector de fumaça, ressalvas nas avaliações).
 Casa nova entra já com essa análise, sem código extra.
 
-## Ligar a votação compartilhada
+## Votação
 
-Enquanto `window.CONFIG.firebase` for `null` (em `js/config.js`), cada voto fica
-só no navegador de quem votou e a página avisa "rascunho local".
+Ligada e funcionando no Firebase Realtime Database — projeto **`renecastro-a6d57`**
+(conta rene.affonso@gmail.com, plano Spark, sem custo). A config está em
+`js/config.js`; os votos ficam em `reveillon-2026-2027/votos/<slug>`.
 
-Para ligar de verdade — grátis, plano Spark, sem cartão:
+Ver os votos a qualquer momento:
 
-1. console.firebase.google.com → **Adicionar projeto**
-2. Build → **Realtime Database** → Criar banco → modo de teste
-3. Configurações do projeto → Seus apps → **Web (`</>`)** → copiar o objeto de config
-4. Colar em `js/config.js` e publicar
+```bash
+curl -s https://renecastro-a6d57-default-rtdb.firebaseio.com/reveillon-2026-2027/votos.json
+```
 
-As regras do banco em modo de teste expiram em 30 dias. Para durar até a viagem,
-troque por:
+As regras publicadas liberam leitura dos votos e escrita apenas no formato
+esperado, e fecham todo o resto do banco:
 
 ```json
-{ "rules": { "reveillon-2026-2027": { ".read": true, ".write": true } } }
+{
+  "rules": {
+    "reveillon-2026-2027": {
+      "votos": {
+        ".read": true,
+        "$slug": {
+          ".write": true,
+          ".validate": "newData.hasChildren(['casa','nome','em']) && newData.child('casa').val().length <= 40 && newData.child('nome').val().length <= 60 && newData.child('em').isNumber()"
+        }
+      }
+    }
+  }
+}
 ```
+
+Não há login: quem abre o link escolhe um nome da lista e vota. Para 13 amigos
+com um link privado isso é o certo — pedir senha afastaria metade do grupo. Se um
+dia precisar zerar a votação, apague o nó `reveillon-2026-2027/votos` no console.
+
+Se `window.CONFIG.firebase` voltar a ser `null`, a página cai sozinha em modo
+rascunho local (voto só no navegador de quem votou) e avisa isso na tela.
 
 ## Fotos de perfil
 
