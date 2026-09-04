@@ -3,29 +3,30 @@
    Base herdada de renecastro.com.br (--bg / --fg / --muted / --accent / --line)
    --------------------------------------------------------------- */
 :root {
-  --bg: #fafafa;
+  color-scheme: light;          /* nada de dark automático: a página é branca */
+  --bg: #ffffff;
   --bg-card: #ffffff;
-  --bg-surface: #f3f4f6;
-  --bg-sunken: #eceef1;
-  --fg: #18181b;
-  --fg-soft: #3f3f46;
-  --muted: #5f6672;
+  --bg-surface: #f5f5f7;
+  --bg-sunken: #eaeaee;
+  --fg: #000000;
+  --fg-soft: #26262b;
+  --muted: #585f6b;
   --accent: #d11f54;
   --accent-fg: #ffffff;
   --accent-soft: #fdeaf0;
   --gold: #7d5f16;
   --gold-soft: #fbf3e2;
-  --line: rgba(0, 0, 0, .10);
-  --line-strong: rgba(0, 0, 0, .18);
-  --ok: #157347;
+  --line: rgba(0, 0, 0, .13);
+  --line-strong: rgba(0, 0, 0, .24);
+  --ok: #146c43;
   --ok-soft: #e6f4ec;
-  --warn: #92610a;
+  --warn: #8a5a08;
   --warn-soft: #fdf3e0;
-  --danger: #b42318;
+  --danger: #ad2117;
   --danger-soft: #fdeceb;
   --shadow-sm: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,.14);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.09);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.16);
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
@@ -33,34 +34,6 @@
   --pad: 20px;
   --maxw: 1120px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1115;
-    --bg-card: #171a20;
-    --bg-surface: #1e222a;
-    --bg-sunken: #14171d;
-    --fg: #f4f4f5;
-    --fg-soft: #d4d4d8;
-    --muted: #9aa0aa;
-    --accent: #ff5c85;
-    --accent-fg: #1a0710;
-    --accent-soft: #2e131c;
-    --gold: #e0bb6c;
-    --gold-soft: #2a2317;
-    --line: rgba(255,255,255,.10);
-    --line-strong: rgba(255,255,255,.20);
-    --ok: #5ed19a;
-    --ok-soft: #14261e;
-    --warn: #f0c060;
-    --warn-soft: #2a2214;
-    --danger: #ff8b80;
-    --danger-soft: #2c1613;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
-    --shadow-md: 0 4px 14px rgba(0,0,0,.45);
-    --shadow-lg: 0 14px 38px rgba(0,0,0,.6);
-  }
 }
 
 * { box-sizing: border-box; }
