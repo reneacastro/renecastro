@@ -359,7 +359,7 @@ table.cmp .sub { display: block; font-size: 12.5px; color: var(--muted); font-we
   .ambientes button,
   .lb-chip { min-height: 44px; display: inline-flex; align-items: center; }
   .casa-stars a,
-  .foot a { display: inline-block; padding: 11px 0; }
+  .foot a { display: inline-block; padding: 12px 0; }
   .lb-nav { width: 48px; height: 48px; font-size: 22px; }
   .brand { padding: 9px 0; }
   .rev-t { padding: 2px 0; }
