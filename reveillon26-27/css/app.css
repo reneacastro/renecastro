@@ -350,13 +350,16 @@ table.cmp .sub { display: block; font-size: 12.5px; color: var(--muted); font-we
 .av > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 /* =============== TOQUE =============== */
-/* dedo não acerta alvo de 35px: no toque tudo que é clicável vai a 44px */
-@media (pointer: coarse) {
+/* dedo não acerta alvo de 35px: no toque tudo que é clicável vai a 44px.
+   vale por ponteiro grosso E por tela estreita — nem todo celular reporta
+   pointer:coarse, e depender só disso deixaria o botão pequeno no aparelho */
+@media (pointer: coarse), (max-width: 760px) {
   .topnav a,
   .btn-sm,
   .ambientes button,
   .lb-chip { min-height: 44px; display: inline-flex; align-items: center; }
-  .casa-stars a { display: inline-block; padding: 11px 0; }
+  .casa-stars a,
+  .foot a { display: inline-block; padding: 11px 0; }
   .lb-nav { width: 48px; height: 48px; font-size: 22px; }
   .brand { padding: 9px 0; }
   .rev-t { padding: 2px 0; }
