@@ -75,6 +75,15 @@
   --trem-text-opacity: 0;
   --trem-text-y: 24px;
   --trem-parapeito: 22vh; /* wall under the window: the window image ends at ~78% of the screen */
+  /* Trem → Música (script.js): a sideways pan, then the title lines rise out of their masks. */
+  --trem-x: 0vw;
+  --musica-opacity: 0;
+  --musica-visibility: hidden;
+  --musica-filter: none;
+  --musica-x: 100vw;
+  --musica-l1: 0;
+  --musica-l2: 0;
+  --musica-ceu: #dbe6ee; /* the turntable's sky: any margin and the blurred backdrop read as sky */
   --ink: #111411;
   --paper: #fdf1e1;
   --scene-title: 4.75rem; /* scene headings (story panels and the train); steps down per breakpoint */
@@ -116,11 +125,11 @@ button {
 
 /* Scroll rig */
 
-/* 5300px of choreography while the stage stays pinned (#trem is the last stop). Measured from the stage
-   height rather than the screen, so on screens shorter than --stage-min the stage is still pinned at #trem. */
+/* 6900px of choreography while the stage stays pinned (#musica is the last stop). Measured from the stage
+   height rather than the screen, so on screens shorter than --stage-min the stage is still pinned there. */
 .cinema-scroll {
   position: relative;
-  height: calc(var(--stage-h) + 5300px);
+  height: calc(var(--stage-h) + 6900px);
 }
 
 /* Menu targets: the scroll distance where each scene is fully on stage (script.js uses the same map). */
@@ -146,6 +155,10 @@ button {
 
 #trem {
   top: 5300px;
+}
+
+#musica {
+  top: 6900px;
 }
 
 /* overflow: clip (not just hidden) so focusing an off-screen card can't scroll the scene sideways. */
@@ -508,6 +521,7 @@ button {
   opacity: var(--trem-opacity);
   visibility: var(--trem-visibility);
   filter: var(--trem-filter);
+  transform: translate3d(var(--trem-x), 0, 0);
 }
 
 .trem-paisagem,
@@ -570,6 +584,104 @@ button {
   transform: translate3d(0, var(--trem-text-y), 0);
 }
 
+/* Música: the scene after Trem, reached by a sideways pan. From the vinyl prompt: the footage keeps its
+   sky at the top for the title and a light wash keeps the dark type crisp; on portrait screens the clip
+   is bottom-anchored over a blurred copy of its first frame. */
+
+.musica-cena {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  overflow: hidden;
+  overflow: clip;
+  background: var(--musica-ceu);
+  opacity: var(--musica-opacity);
+  visibility: var(--musica-visibility);
+  filter: var(--musica-filter);
+  transform: translate3d(var(--musica-x), 0, 0);
+}
+
+/* Sized to the screen rather than the stage (like the copy), so on screens shorter than the stage the
+   turntable stays in view. */
+.musica-midia {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100vh;
+}
+
+/* Top-aligned: on screens wider than the clip's 16:9 it is cropped from the bottom, which keeps the sky
+   between the band and the turntable for the title. */
+.musica-video {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Portrait screens only (see the 900px portrait query): the first frame, blurred, fills the sky above
+   the bottom-anchored clip. It is the same frame as the footage, so the colours match. */
+.musica-fundo {
+  display: none;
+  position: absolute;
+  top: -8%;
+  left: -8%;
+  width: 116%;
+  height: 116%;
+  object-fit: cover;
+  object-position: center 22%;
+  filter: blur(30px) saturate(104%);
+  transform: scale(1.05);
+}
+
+/* Light wash over the top of the footage, under the title. */
+.musica-midia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(226, 236, 243, 0.55) 0%, rgba(226, 236, 243, 0.18) 34%, rgba(226, 236, 243, 0) 58%),
+    radial-gradient(120% 70% at 50% 0%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 60%);
+}
+
+/* Top-anchored under the band, over the sky, with the turntable below. Sized to the screen like the
+   train copy, so screens shorter than the stage still see it. */
+.musica-conteudo {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: calc(var(--band-h) + clamp(1.5rem, 5vh, 4.5rem)) 20px 0;
+  pointer-events: none;
+}
+
+/* Each line rises out of its own mask; the padding and negative margin let descenders clear the mask
+   without adding height. */
+.musica-linha {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0.08em 0 0.16em;
+  margin: -0.08em 0 -0.16em;
+}
+
+.musica-linha > span {
+  display: block;
+  opacity: var(--musica-l1);
+  transform: translate3d(0, calc((1 - var(--musica-l1)) * 110%), 0);
+}
+
+.musica-linha + .musica-linha > span {
+  opacity: var(--musica-l2);
+  transform: translate3d(0, calc((1 - var(--musica-l2)) * 110%), 0);
+}
+
 /* Copy */
 
 .intro-copy {
@@ -626,9 +738,10 @@ button {
   will-change: transform, opacity;
 }
 
-/* Scene headings and copy share one type style, the train scene included. */
+/* Scene headings and copy share one type style, the train and music scenes included. */
 .story-panel h2,
-.trem-titulo {
+.trem-titulo,
+.musica-titulo {
   margin: 0;
   color: #fdf1e1;
   font-family: "Ogg Medium", Georgia, "Times New Roman", serif;
@@ -655,6 +768,13 @@ button {
 .trem-titulo {
   font-size: min(var(--scene-title), calc(var(--stage-h) * 0.076));
   text-wrap: balance;
+}
+
+/* The music title sits on a pale sky: the vinyl prompt's dark ink, no shadow. */
+.musica-titulo {
+  color: var(--ink);
+  text-align: center;
+  text-shadow: none;
 }
 
 .story-panel-bridge {
@@ -910,6 +1030,43 @@ button {
   }
 }
 
+/* Music title below 900px: the two lines may re-wrap, balanced. */
+@media (max-width: 900px) {
+  .musica-linha {
+    white-space: normal;
+    text-wrap: balance;
+  }
+}
+
+/* Portrait: a 16:9 clip stretched over a tall screen would show only the turntable and crop away the sky
+   the title sits on. The clip is bottom-anchored at a sane size, its top edge feathered into the blurred
+   first frame behind it. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .musica-fundo {
+    display: block;
+  }
+
+  .musica-video {
+    top: auto;
+    bottom: 0;
+    height: 64%;
+    -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 9%, #000 20%);
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 9%, #000 20%);
+  }
+}
+
+/* A phone on its side: little room between the band and the turntable, so the music title sits closer
+   to the band and a size down (the vinyl prompt does the same). */
+@media (max-height: 520px) and (orientation: landscape) {
+  .musica-conteudo {
+    padding-top: calc(var(--band-h) + 0.75rem);
+  }
+
+  .musica-titulo {
+    font-size: min(var(--scene-title), 9vh);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -927,5 +1084,10 @@ button {
 
   .trem-janela {
     animation: none;
+  }
+
+  .musica-linha > span,
+  .musica-linha + .musica-linha > span {
+    transform: none;
   }
 }

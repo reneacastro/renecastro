@@ -1,5 +1,5 @@
 /*
- * Faixa azul Primetour: header compartilhado pelas páginas de teste (mostar, trem). Mobile first.
+ * Faixa azul Primetour: header das páginas de teste (mostar). Mobile first.
  * Cores do Gestor (css/base.css): "o azul da marca" e o dourado do tema escuro.
  */
 
@@ -40,14 +40,31 @@
   height: var(--logo-h);
 }
 
-/* Every item stays on one row; if a very narrow screen can't fit them, the row scrolls sideways
-   instead of wrapping. */
+/* Every item stays on one row; if a narrow screen can't fit them, the row scrolls sideways instead of
+   wrapping. The page keeps the current item in view and marks the side that has more (has-more-*),
+   which fades out. */
 .site-nav {
   display: flex;
   align-items: center;
   gap: 14px;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
+}
+
+.site-nav.has-more-right {
+  -webkit-mask-image: linear-gradient(to left, transparent, #000 28px);
+  mask-image: linear-gradient(to left, transparent, #000 28px);
+}
+
+.site-nav.has-more-left {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 28px);
+  mask-image: linear-gradient(to right, transparent, #000 28px);
+}
+
+.site-nav.has-more-left.has-more-right {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent);
 }
 
 .site-nav::-webkit-scrollbar {

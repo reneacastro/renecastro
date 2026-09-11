@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mostar · Primetour</title>
-  <meta name="description" content="Mostar, na Bósnia e Herzegovina, em cenas: a Ponte Velha, o bazar, os pontos da cidade velha e a viagem de trem." />
+  <meta name="description" content="Mostar, na Bósnia e Herzegovina, em cenas: a Ponte Velha, o bazar, os pontos da cidade velha, a viagem de trem e a playlist da viagem." />
   <meta name="robots" content="noindex" />
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="/shared/faixa.css?v=1" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="/shared/faixa.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <script>document.documentElement.classList.add("is-loading");</script>
-  <script src="script.js?v=6" defer></script>
+  <script src="script.js?v=7" defer></script>
 </head>
 <body>
   <main class="site-shell">
@@ -19,6 +19,7 @@
       <span class="scroll-anchor" id="bazar"></span>
       <span class="scroll-anchor" id="roteiros"></span>
       <span class="scroll-anchor" id="trem"></span>
+      <span class="scroll-anchor" id="musica"></span>
 
       <div class="stage">
         <header class="site-header" aria-label="Navegação principal">
@@ -31,6 +32,7 @@
             <a href="#bazar">Bazar</a>
             <a href="#roteiros">Roteiros</a>
             <a href="#trem">Trem</a>
+            <a href="#musica">Música</a>
           </nav>
         </header>
 
@@ -134,6 +136,25 @@
           <div class="trem-conteudo">
             <h2 class="trem-titulo">Agora, seguimos de trem <br />para o interior da Bósnia.</h2>
             <p class="trem-texto">Conheça cidades medievais, vilarejos pitorescos e uma atmosfera sem igual.</p>
+          </div>
+        </section>
+
+        <!-- Música: after Trem, reached by a sideways pan. The poster and the footage load once the
+             visitor reaches the train (script.js). -->
+        <section class="musica-cena" aria-label="A playlist da viagem">
+          <div class="musica-midia" aria-hidden="true">
+            <img class="musica-fundo" alt="" width="1280" height="720" data-src="musica/toca-discos.webp" />
+            <video class="musica-video" muted loop playsinline preload="none" data-poster="musica/toca-discos.webp">
+              <source src="musica/toca-discos-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+              <source src="musica/toca-discos-1080.mp4" type="video/mp4" />
+            </video>
+          </div>
+
+          <div class="musica-conteudo">
+            <h2 class="musica-titulo">
+              <span class="musica-linha"><span>Enquanto viaja, confira a playlist</span></span>
+              <span class="musica-linha"><span>exclusiva que preparamos.</span></span>
+            </h2>
           </div>
         </section>
 

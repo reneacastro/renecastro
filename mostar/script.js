@@ -14,6 +14,10 @@
   const trainScene = document.querySelector(".trem-cena");
   const trainVideo = document.querySelector(".trem-video");
   const trainWindow = document.querySelector(".trem-janela");
+  const musicScene = document.querySelector(".musica-cena");
+  const musicVideo = document.querySelector(".musica-video");
+  const musicBackdrop = document.querySelector(".musica-fundo");
+  const navList = document.querySelector(".site-nav");
 
   if (!section || !stage || !backStack) {
     root.classList.remove("is-loading");
@@ -34,8 +38,11 @@
   let currentScene = "";
 
   const TRAIN_WARM_AT = 3200; // start fetching the carriage once the visitor reaches Roteiros
+  const MUSIC_WARM_AT = 4900; // and the turntable once the carriage is on stage
   let trainWarmed = false;
   let trainShown = false;
+  let musicWarmed = false;
+  let musicShown = false;
 
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -59,10 +66,36 @@
     root.style.setProperty(name, String(value));
   };
 
-  // Menu: highlight the scene on stage. Breakpoints sit between the choreography segments, matching
-  // the scroll anchors #inicio (0), #ponte (1100), #bazar (2340), #roteiros (3700), #trem (5300).
-  const sceneAt = (s) =>
-    s < 700 ? "inicio" : s < 1700 ? "ponte" : s < 2700 ? "bazar" : s < 4450 ? "roteiros" : "trem";
+  // Menu: highlight the scene on stage. Each scene lasts until the scroll distance next to it; the
+  // breakpoints sit between the choreography segments, matching the scroll anchors #inicio (0),
+  // #ponte (1100), #bazar (2340), #roteiros (3700), #trem (5300) and #musica (6900).
+  const SCENES = [
+    [700, "inicio"],
+    [1700, "ponte"],
+    [2700, "bazar"],
+    [4450, "roteiros"],
+    [6050, "trem"],
+    [Infinity, "musica"],
+  ];
+  const sceneAt = (s) => SCENES.find(([end]) => s < end)[1];
+
+  // On narrow screens the band's row scrolls sideways: keep the current item in view and mark the side
+  // that has more items (it fades out in faixa.css).
+  const updateNavEdges = () => {
+    if (!navList) return;
+    const hidden = navList.scrollWidth - navList.clientWidth;
+    navList.classList.toggle("has-more-left", hidden > 1 && navList.scrollLeft > 1);
+    navList.classList.toggle("has-more-right", hidden > 1 && navList.scrollLeft < hidden - 1);
+  };
+
+  const revealNavLink = (link) => {
+    if (!navList || !link || navList.scrollWidth <= navList.clientWidth + 1) return;
+    const left = link.getBoundingClientRect().left - navList.getBoundingClientRect().left + navList.scrollLeft;
+    navList.scrollTo({
+      left: left - (navList.clientWidth - link.offsetWidth) / 2,
+      behavior: reduceMotion.matches ? "auto" : "smooth",
+    });
+  };
 
   const updateNav = (s) => {
     const scene = sceneAt(s);
@@ -71,31 +104,45 @@
     navLinks.forEach((link) => {
       const isCurrent = link.hash === `#${scene}`;
       link.classList.toggle("is-current", isCurrent);
-      if (isCurrent) link.setAttribute("aria-current", "true");
-      else link.removeAttribute("aria-current");
+      if (isCurrent) {
+        link.setAttribute("aria-current", "true");
+        revealNavLink(link);
+      } else {
+        link.removeAttribute("aria-current");
+      }
     });
   };
 
-  // Train footage: nothing downloads until the visitor reaches Roteiros (or lands on #trem); then the
-  // poster (the video's first frame), the window and the footage load.
-  const playTrain = () => {
-    if (!trainVideo || reduceMotion.matches) return;
-    const attempt = trainVideo.play();
+  // Scene footage (train, turntable): nothing downloads until the visitor is a scene away (or lands on
+  // it); then the poster (the video's first frame) and the footage load.
+  const playVideo = (video) => {
+    if (!video || reduceMotion.matches) return;
+    const attempt = video.play();
     if (attempt) attempt.catch(() => {});
+  };
+
+  const warmVideo = (video) => {
+    if (!video) return;
+    if (video.dataset.poster) video.poster = video.dataset.poster;
+    video.preload = "auto";
+    video.load();
   };
 
   const warmTrain = () => {
     if (trainWarmed || !trainScene) return;
     trainWarmed = true;
-    if (trainVideo) {
-      if (trainVideo.dataset.poster) trainVideo.poster = trainVideo.dataset.poster;
-      trainVideo.preload = "auto";
-      trainVideo.load();
-    }
+    warmVideo(trainVideo);
     if (trainWindow && trainWindow.dataset.srcset) {
       trainWindow.srcset = trainWindow.dataset.srcset;
       trainWindow.src = trainWindow.dataset.src;
     }
+  };
+
+  const warmMusic = () => {
+    if (musicWarmed || !musicScene) return;
+    musicWarmed = true;
+    warmVideo(musicVideo);
+    if (musicBackdrop && musicBackdrop.dataset.src) musicBackdrop.src = musicBackdrop.dataset.src;
   };
 
   function requestTick() {
@@ -157,8 +204,19 @@
     const trainIn = smoothstep(4250, 4600, smoothScroll);
     const trainSettle = smoothstep(4250, 4950, smoothScroll);
     const trainText = smoothstep(4800, 5150, smoothScroll);
+    // Trem → Música: a sideways pan. The turntable pushes the carriage off to the left, overlapping it a
+    // little so no seam opens between them, and both blur most at the fastest point of the move; with
+    // reduced motion it is a plain crossfade. Then the title lines rise out of their masks.
+    const pan = smoothstep(5650, 6450, smoothScroll);
+    const panSwing = Math.sin(Math.PI * pan); // 0 at both ends, 1 halfway
+    const musicLine1 = smoothstep(6350, 6750, smoothScroll);
+    const musicLine2 = smoothstep(6430, 6830, smoothScroll);
     const worldBlur = worldExit * 18 * blurScale * motion;
-    const trainBlur = (1 - trainSettle) * 16 * blurScale * motion;
+    const trainBlur = ((1 - trainSettle) * 16 + panSwing * 18) * blurScale * motion;
+    const musicBlur = panSwing * 18 * blurScale * motion;
+    const trainOpacity = trainIn * (motion ? 1 : 1 - pan);
+    const trainOnStage = trainOpacity > 0.001 && pan < 0.999;
+    const musicOnStage = pan > 0.001;
 
     setVar("--mx", (reduceMotion.matches ? 0 : mouseX).toFixed(4));
     setVar("--my", (reduceMotion.matches ? 0 : mouseY).toFixed(4));
@@ -228,21 +286,34 @@
     setVar("--world-filter", worldBlur > 0.05 ? `blur(${worldBlur}px)` : "none");
     setVar("--world-opacity", 1 - worldFade);
     setVar("--world-visibility", worldFade > 0.999 ? "hidden" : "visible");
-    setVar("--trem-opacity", trainIn);
-    setVar("--trem-visibility", trainIn > 0.001 ? "visible" : "hidden");
-    setVar("--trem-filter", trainIn > 0.001 && trainBlur > 0.05 ? `blur(${trainBlur}px)` : "none");
+    setVar("--trem-opacity", trainOpacity);
+    setVar("--trem-visibility", trainOnStage ? "visible" : "hidden");
+    setVar("--trem-filter", trainOnStage && trainBlur > 0.05 ? `blur(${trainBlur}px)` : "none");
+    setVar("--trem-x", `${-pan * 100 * motion}vw`);
     setVar("--trem-bg-scale", 1 + (1 - trainSettle) * 0.18 * motion);
     setVar("--trem-frame-scale", 1 + (1 - trainSettle) * 0.6 * motion);
     setVar("--trem-text-opacity", trainText);
     setVar("--trem-text-y", `${(1 - trainText) * 24 * motion}px`);
+    setVar("--musica-opacity", motion ? 1 : pan);
+    setVar("--musica-visibility", musicOnStage ? "visible" : "hidden");
+    setVar("--musica-filter", musicOnStage && musicBlur > 0.05 ? `blur(${musicBlur}px)` : "none");
+    setVar("--musica-x", `${((1 - pan) * 100 - panSwing * 8) * motion}vw`);
+    setVar("--musica-l1", musicLine1);
+    setVar("--musica-l2", musicLine2);
     stage.classList.toggle("is-leaving", worldExit > 0.02);
 
     if (smoothScroll > TRAIN_WARM_AT) warmTrain();
-    const shown = trainIn > 0.001;
-    if (shown !== trainShown) {
-      trainShown = shown;
-      if (shown) playTrain();
+    if (smoothScroll > MUSIC_WARM_AT) warmMusic();
+    // Only the footage on stage plays.
+    if (trainOnStage !== trainShown) {
+      trainShown = trainOnStage;
+      if (trainShown) playVideo(trainVideo);
       else if (trainVideo) trainVideo.pause();
+    }
+    if (musicOnStage !== musicShown) {
+      musicShown = musicOnStage;
+      if (musicShown) playVideo(musicVideo);
+      else if (musicVideo) musicVideo.pause();
     }
 
     updateNav(smoothScroll);
@@ -324,8 +395,11 @@
   window.addEventListener("scroll", requestTick, { passive: true });
   window.addEventListener("resize", () => {
     updateSightSlider();
+    updateNavEdges();
+    revealNavLink(navList && navList.querySelector(".is-current"));
     requestTick();
   });
+  if (navList) navList.addEventListener("scroll", updateNavEdges, { passive: true });
   window.addEventListener(
     "pointermove",
     (event) => {
@@ -338,17 +412,22 @@
   if (sightPrev) sightPrev.addEventListener("click", () => moveSightSlider(-1));
   if (sightNext) sightNext.addEventListener("click", () => moveSightSlider(1));
 
-  // Reduced motion: the train shows its poster instead of moving footage (its window stops rocking in CSS).
+  // Reduced motion: the scenes show their posters instead of moving footage (the train window also stops
+  // rocking, in CSS).
   const applyMotionPreference = () => {
-    if (reduceMotion.matches) {
-      if (trainVideo) trainVideo.pause();
-    } else if (trainShown) {
-      playTrain();
-    }
+    [
+      [trainVideo, trainShown],
+      [musicVideo, musicShown],
+    ].forEach(([video, onStage]) => {
+      if (!video) return;
+      if (reduceMotion.matches) video.pause();
+      else if (onStage) playVideo(video);
+    });
     requestTick();
   };
   if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", applyMotionPreference);
 
   setupSightSlider();
+  updateNavEdges();
   requestTick();
 })();
