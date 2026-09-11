@@ -1,12 +1,14 @@
 /*
- * Trem: hero com paisagens pela janela de um trem (prompt "Lumora"), mobile first.
- * O menu do prompt saiu: a navegação é a faixa Primetour (/shared/faixa.css).
+ * Trem: paisagens pela janela de um trem (prompt "Lumora"), mobile first.
+ * A navegação é a faixa Primetour (/shared/faixa.css). O hero tem título, texto e o seletor de
+ * paisagens, centralizados na área da janela.
  * Breakpoints do prompt (Tailwind): sm 640px, md 768px, lg 1024px.
  */
 
 :root {
   --trem-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --trem-escuro: #182c41; /* "Mata fechada": o prompt escurece o conteúdo nessa cena */
+  --trem-parapeito: 22vh; /* wall under the window: the window image ends at ~78% of the screen */
 }
 
 * {
@@ -24,8 +26,6 @@ body {
 .trem {
   --trem-ink: #fff;
   --trem-ink-soft: rgba(255, 255, 255, 0.8);
-  --trem-btn-bg: #fff;
-  --trem-btn-fg: #0b0b0b;
   position: relative;
   width: 100%;
   min-height: 100vh;
@@ -38,8 +38,6 @@ body {
 .trem.is-escuro {
   --trem-ink: var(--trem-escuro);
   --trem-ink-soft: color-mix(in srgb, var(--trem-escuro) 85%, transparent);
-  --trem-btn-bg: var(--trem-escuro);
-  --trem-btn-fg: #fff;
 }
 
 /* Paisagens + janela */
@@ -83,50 +81,17 @@ body {
   }
 }
 
-/* Liquid glass (prompt) */
-
-.liquid-glass {
-  background: rgba(255, 255, 255, 0.01);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.liquid-glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.15) 20%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 60%,
-    rgba(255, 255, 255, 0.15) 80%,
-    rgba(255, 255, 255, 0.45) 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* Conteúdo */
+/* Conteúdo: centred between the band and the window sill. */
 
 .trem-conteudo {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: calc(var(--band-h) + 40px) 20px 20px;
+  padding: calc(var(--band-h) + 24px) 20px calc(var(--trem-parapeito) + 16px);
 }
 
 .trem-hero {
@@ -138,16 +103,9 @@ body {
   transition: color 700ms ease;
 }
 
-.trem-selo {
-  margin: 0;
-  padding: 7px 16px;
-  border-radius: 999px;
-  font: 500 12px/1.3 var(--trem-ui);
-}
-
 .trem-titulo {
   max-width: 56rem;
-  margin: 20px 0 0;
+  margin: 0;
   font-size: 2.25rem;
   font-weight: 400;
   line-height: 1.1;
@@ -159,59 +117,6 @@ body {
   color: var(--trem-ink-soft);
   font: 400 14px/1.625 var(--trem-ui);
   transition: color 700ms ease;
-}
-
-.trem-email {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  max-width: 320px;
-  margin-top: 28px;
-  padding: 4px;
-  border-radius: 999px;
-}
-
-.trem-email:focus-within {
-  outline: 2px solid color-mix(in srgb, var(--trem-ink) 55%, transparent);
-  outline-offset: 3px;
-}
-
-.trem-email input {
-  flex: 1;
-  min-width: 0;
-  height: 40px;
-  padding: 0 14px;
-  border: 0;
-  background: transparent;
-  color: var(--trem-ink);
-  font: 400 14px var(--trem-ui);
-  outline: none;
-  transition: color 700ms ease;
-}
-
-.trem-email input::placeholder {
-  color: currentColor;
-  opacity: 0.6;
-}
-
-.trem-email button {
-  flex: 0 0 auto;
-  height: 40px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--trem-btn-bg);
-  color: var(--trem-btn-fg);
-  font: 600 13px var(--trem-ui);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 700ms ease, color 700ms ease;
-}
-
-.trem-aviso {
-  margin: 12px 0 0;
-  color: var(--trem-ink-soft);
-  font: 400 12px/1.4 var(--trem-ui);
 }
 
 /* The four scenes fit on one row down to 360px wide. */
@@ -249,61 +154,15 @@ body {
   outline-offset: 4px;
 }
 
-/* Números: always white, pushed to the bottom (the prompt's flex-1 spacer). */
-.trem-numeros {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px 16px;
-  margin: auto 0 0;
-  padding: 32px 0 0;
-  list-style: none;
-  color: rgba(255, 255, 255, 0.7);
-  font: 400 12px/1.4 var(--trem-ui);
-}
-
-.trem-numeros li + li::before {
-  content: "|";
-  display: none;
-  margin-right: 16px;
-  opacity: 0.5;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Narrow phones (320–359px): badge on one line, heading on two, full placeholder, scenes 2 × 2. */
+/* Narrow phones (320–359px): heading on two lines, scenes 2 × 2. */
 @media (max-width: 359px) {
   .trem-conteudo {
     padding-right: 16px;
     padding-left: 16px;
   }
 
-  .trem-selo {
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-
   .trem-titulo {
     font-size: 2rem;
-  }
-
-  .trem-email input {
-    padding: 0 10px;
-  }
-
-  .trem-email button {
-    padding: 0 12px;
-    font-size: 12px;
   }
 
   .trem-cenas {
@@ -316,36 +175,17 @@ body {
 
 @media (min-width: 640px) {
   .trem-conteudo {
-    padding: calc(var(--band-h) + 56px) 32px 28px;
-  }
-
-  .trem-selo {
-    padding: 8px 18px;
-    font-size: 13px;
+    padding-right: 32px;
+    padding-left: 32px;
   }
 
   .trem-titulo {
-    margin-top: 24px;
     font-size: 3rem;
   }
 
   .trem-texto {
     margin-top: 20px;
     font-size: 16px;
-  }
-
-  .trem-email {
-    max-width: 24rem;
-    margin-top: 32px;
-  }
-
-  .trem-email input {
-    font-size: 15px;
-  }
-
-  .trem-email button {
-    padding: 0 20px;
-    font-size: 14px;
   }
 
   .trem-cenas {
@@ -355,14 +195,6 @@ body {
 
   .trem-cenas button {
     font-size: 13px;
-  }
-
-  .trem-numeros {
-    font-size: 14px;
-  }
-
-  .trem-numeros li + li::before {
-    display: inline;
   }
 }
 
@@ -378,7 +210,8 @@ body {
 
 @media (min-width: 1024px) {
   .trem-conteudo {
-    padding: calc(var(--band-h) + 72px) 48px 32px;
+    padding-right: 48px;
+    padding-left: 48px;
   }
 
   .trem-titulo {
@@ -386,23 +219,10 @@ body {
   }
 }
 
-/* Short screens (iPhone SE, landscape laptops): tighter vertical rhythm so the hero never runs into
-   the numbers at the bottom. */
+/* Short screens (iPhone SE, landscape laptops): tighter vertical rhythm. */
 @media (max-height: 700px) {
-  .trem-conteudo {
-    padding-top: calc(var(--band-h) + 24px);
-  }
-
-  .trem-titulo {
-    margin-top: 14px;
-  }
-
   .trem-texto {
     margin-top: 12px;
-  }
-
-  .trem-email {
-    margin-top: 20px;
   }
 
   .trem-cenas {

@@ -3,8 +3,6 @@
   const videos = Array.from(document.querySelectorAll(".trem-video"));
   const buttons = Array.from(document.querySelectorAll(".trem-cenas button"));
   const switcher = document.querySelector(".trem-cenas");
-  const form = document.querySelector(".trem-email");
-  const notice = document.querySelector(".trem-aviso");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   if (!trem || !switcher || videos.length !== buttons.length) return;
@@ -67,12 +65,4 @@
   };
   applyMotionPreference();
   if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", applyMotionPreference);
-
-  // No backend behind this test page: say so instead of pretending the email was sent.
-  if (form && notice) {
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      notice.hidden = false;
-    });
-  }
 })();
