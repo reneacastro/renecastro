@@ -38,7 +38,7 @@
   let activeSight = originalSightCount;
   let currentScene = "";
 
-  const OPENING = 1700; // the opening act (the cabin window) runs before Mostar's choreography
+  const OPENING = 2100; // the opening act (the cabin window) runs before Mostar's choreography
   const TRAIN_WARM_AT = 3200; // start fetching the carriage once the visitor reaches Roteiros
   const MUSIC_WARM_AT = 4900; // and the turntable once the carriage is on stage
   let trainWarmed = false;
@@ -201,15 +201,17 @@
 
     const motion = reduceMotion.matches ? 0 : 1;
     const blurScale = window.innerWidth <= 640 ? 0.7 : 1;
-    // Abertura → Mostar: the window holds the question, the copy follows, and then the cabin pushes
-    // forward and blurs while Mostar arrives from slightly closer.
-    const openTitleOut = smoothstep(360, 760, smoothScroll);
-    const openCopy = smoothstep(560, 900, smoothScroll);
-    const openCopyOut = smoothstep(1150, 1450, smoothScroll);
+    // Abertura → Mostar, in four beats: the window holds the question; then it flies past the camera and
+    // the sky takes the whole screen; the copy reads on that open sky; and finally the sky pushes forward
+    // and blurs while Mostar arrives from slightly closer.
+    const openTitleOut = smoothstep(380, 780, smoothScroll);
+    const openSky = smoothstep(650, 1200, smoothScroll);
+    const openCopy = smoothstep(1050, 1400, smoothScroll);
+    const openCopyOut = smoothstep(1700, 1900, smoothScroll);
     const openCopyOn = openCopy * (1 - openCopyOut);
-    const openExit = smoothstep(1100, 1700, smoothScroll);
-    const openFade = smoothstep(1320, 1700, smoothScroll);
-    const worldEnter = smoothstep(1240, 1700, smoothScroll);
+    const openExit = smoothstep(1650, 2100, smoothScroll);
+    const openFade = smoothstep(1780, 2100, smoothScroll);
+    const worldEnter = smoothstep(1700, 2100, smoothScroll);
     const openBlur = openExit * 16 * blurScale * motion;
     // Roteiros → Trem: Mostar keeps pushing forward and blurs away while the carriage fades in from
     // closer and blurred, then settles sharp; the copy comes last, like in the other scenes.
@@ -299,13 +301,18 @@
 
     setVar("--abertura-opacity", 1 - openFade);
     setVar("--abertura-visibility", openFade > 0.999 ? "hidden" : "visible");
-    setVar("--abertura-scale", 1 + openExit * 0.2 * motion);
+    setVar("--abertura-scale", 1 + openExit * 0.18 * motion);
+    setVar("--abertura-janela-scale", 1 + (openSky * 2.6 + openExit * 0.4) * motion);
+    setVar("--abertura-janela-opacity", 1 - openSky);
+    setVar("--abertura-vidro", 1 - openSky);
+    setVar("--abertura-ceu-cheio", openSky);
+    setVar("--abertura-cabine", 1 - openSky);
     setVar("--abertura-filter", openBlur > 0.05 ? `blur(${openBlur}px)` : "none");
     setVar("--abertura-titulo-opacity", 1 - openTitleOut);
     setVar("--abertura-titulo-y", `${openTitleOut * -70 * motion}px`);
     setVar("--abertura-manifesto-opacity", openCopyOn);
     setVar("--abertura-manifesto-y", `${((1 - openCopy) * 28 - openCopyOut * 46) * motion}px`);
-    setVar("--abertura-veu", openCopyOn * 0.85);
+    setVar("--abertura-veu", openCopyOn * 0.5);
     setVar("--world-scale", 1 + worldExit * 0.45 * motion + (1 - worldEnter) * 0.1 * motion);
     setVar("--world-filter", worldBlur > 0.05 ? `blur(${worldBlur}px)` : "none");
     setVar("--world-opacity", worldEnter * (1 - worldFade));

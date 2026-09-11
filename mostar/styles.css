@@ -86,11 +86,17 @@
   --musica-ceu: #dbe6ee; /* the turntable's sky: any margin and the blurred backdrop read as sky */
   /* Abertura → Mostar (script.js): the window holds the question, then the copy, then it pushes forward
      and blurs while Mostar arrives. */
-  --abertura: 1700px; /* how much scroll the opening takes before Mostar's own choreography */
+  --abertura: 2100px; /* how much scroll the opening takes before Mostar's own choreography */
   --abertura-opacity: 1;
   --abertura-visibility: visible;
   --abertura-scale: 1;
   --abertura-filter: none;
+  /* The window flies past the camera and the sky takes the whole screen. */
+  --abertura-janela-scale: 1;
+  --abertura-janela-opacity: 1;
+  --abertura-vidro: 1;
+  --abertura-ceu-cheio: 0;
+  --abertura-cabine: 1;
   --abertura-titulo-opacity: 1;
   --abertura-titulo-y: 0px;
   --abertura-manifesto-opacity: 0;
@@ -544,6 +550,19 @@ button {
   filter: var(--abertura-filter);
 }
 
+/* The sky itself, behind the window: it takes over the screen once the window has flown past. */
+.abertura-ceu-cheio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 58%;
+  opacity: var(--abertura-ceu-cheio);
+  transform: scale(var(--abertura-scale));
+  animation: abertura-deriva 90s linear infinite alternate;
+}
+
 /* The window unit, centred in the space under the band: the panel it sits in, the shadow it throws on the
    cabin wall, and the wall itself (the wide spread), which leaves only the opening showing. */
 .abertura-janela {
@@ -564,7 +583,8 @@ button {
     inset 0 3px 0 rgba(255, 255, 255, 0.07),
     inset 0 30px 60px rgba(0, 0, 0, 0.32),
     inset 0 -24px 56px rgba(0, 0, 0, 0.24);
-  transform: translate3d(-50%, -50%, 0) scale(var(--abertura-scale));
+  opacity: var(--abertura-janela-opacity);
+  transform: translate3d(-50%, -50%, 0) scale(var(--abertura-janela-scale));
   /* Engine hum: translate and rotate are their own properties, so they don't fight the transform above. */
   animation: abertura-tremor 7s ease-in-out infinite;
   pointer-events: none;
@@ -586,6 +606,7 @@ button {
 .abertura-vidro {
   position: absolute;
   inset: 0;
+  opacity: var(--abertura-vidro);
 }
 
 /* The sky drifts past the window. */
@@ -600,13 +621,16 @@ button {
   animation: abertura-deriva 70s linear infinite alternate;
 }
 
+/* translate and scale are their own properties here, so the drift doesn't fight the scroll's transform. */
 @keyframes abertura-deriva {
   from {
-    transform: translate3d(-3%, 1%, 0) scale(1.08);
+    translate: -3% 1%;
+    scale: 1.08;
   }
 
   to {
-    transform: translate3d(3%, -1.5%, 0) scale(1.14);
+    translate: 3% -1.5%;
+    scale: 1.14;
   }
 }
 
@@ -682,11 +706,12 @@ button {
   transform: translateX(-50%);
 }
 
-/* Cabin: light spilling out of the window, dark corners. */
+/* Cabin: light spilling out of the window, dark corners. It goes with the window. */
 .abertura-cabine {
   position: absolute;
   inset: 0;
   z-index: 2;
+  opacity: var(--abertura-cabine);
   background:
     radial-gradient(44% 40% at 50% calc(50% + var(--band-h) / 2), rgba(198, 215, 236, 0.14), rgba(198, 215, 236, 0) 74%),
     radial-gradient(122% 98% at 50% calc(50% + var(--band-h) / 2), rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.55) 100%);
