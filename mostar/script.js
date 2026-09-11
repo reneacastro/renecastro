@@ -37,6 +37,7 @@
   let activeSight = originalSightCount;
   let currentScene = "";
 
+  const OPENING = 1700; // the opening act (the cabin window) runs before Mostar's choreography
   const TRAIN_WARM_AT = 3200; // start fetching the carriage once the visitor reaches Roteiros
   const MUSIC_WARM_AT = 4900; // and the turntable once the carriage is on stage
   let trainWarmed = false;
@@ -172,13 +173,15 @@
       mouseY = lerp(mouseY, targetMouseY, 0.12);
     }
 
-    const frame2 = segmentInOut(smoothScroll, 560, 900, 1300, 1620);
-    const frame3 = segmentInOut(smoothScroll, 1760, 2140, 2540, 2700);
-    const progress = clamp(smoothScroll / 2700);
-    const introExit = smoothstep(90, 650, smoothScroll);
-    const sightsEnterRaw = smoothstep(2760, 3560, smoothScroll);
+    // Mostar starts after the opening, so its whole choreography runs on its own scroll distance.
+    const mostarScroll = smoothScroll - OPENING;
+    const frame2 = segmentInOut(mostarScroll, 560, 900, 1300, 1620);
+    const frame3 = segmentInOut(mostarScroll, 1760, 2140, 2540, 2700);
+    const progress = clamp(mostarScroll / 2700);
+    const introExit = smoothstep(90, 650, mostarScroll);
+    const sightsEnterRaw = smoothstep(2760, 3560, mostarScroll);
     const sightsEnter = Math.pow(sightsEnterRaw, 1.55);
-    const sightsControlsEnter = smoothstep(3360, 3660, smoothScroll);
+    const sightsControlsEnter = smoothstep(3360, 3660, mostarScroll);
     const blurActive = clamp(frame2.active + frame3.active);
     const frame2Opacity = frame2.active * (1 - frame3.enter);
     const splitDrift = Math.pow(frame2.enter, 1.5);
@@ -195,23 +198,33 @@
     const sightsScreenLeft = 48 + window.innerWidth * 0.18;
     const sightsParentLeft = stackHalf + (sightsScreenLeft - backStack.offsetLeft - stackHalf) / backScale;
 
-    // Roteiros → Trem: Mostar keeps pushing forward and blurs away while the carriage fades in from
-    // closer and blurred, then settles sharp; the copy comes last, like in the other scenes.
     const motion = reduceMotion.matches ? 0 : 1;
     const blurScale = window.innerWidth <= 640 ? 0.7 : 1;
-    const worldExit = smoothstep(3950, 4550, smoothScroll);
-    const worldFade = smoothstep(4350, 4700, smoothScroll);
-    const trainIn = smoothstep(4250, 4600, smoothScroll);
-    const trainSettle = smoothstep(4250, 4950, smoothScroll);
-    const trainText = smoothstep(4800, 5150, smoothScroll);
+    // Abertura → Mostar: the window holds the question, the copy follows, and then the cabin pushes
+    // forward and blurs while Mostar arrives from slightly closer.
+    const openTitleOut = smoothstep(360, 760, smoothScroll);
+    const openCopy = smoothstep(560, 900, smoothScroll);
+    const openCopyOut = smoothstep(1150, 1450, smoothScroll);
+    const openCopyOn = openCopy * (1 - openCopyOut);
+    const openExit = smoothstep(1100, 1700, smoothScroll);
+    const openFade = smoothstep(1320, 1700, smoothScroll);
+    const worldEnter = smoothstep(1240, 1700, smoothScroll);
+    const openBlur = openExit * 16 * blurScale * motion;
+    // Roteiros → Trem: Mostar keeps pushing forward and blurs away while the carriage fades in from
+    // closer and blurred, then settles sharp; the copy comes last, like in the other scenes.
+    const worldExit = smoothstep(3950, 4550, mostarScroll);
+    const worldFade = smoothstep(4350, 4700, mostarScroll);
+    const trainIn = smoothstep(4250, 4600, mostarScroll);
+    const trainSettle = smoothstep(4250, 4950, mostarScroll);
+    const trainText = smoothstep(4800, 5150, mostarScroll);
     // Trem → Música: a sideways pan. The turntable pushes the carriage off to the left, overlapping it a
     // little so no seam opens between them, and both blur most at the fastest point of the move; with
     // reduced motion it is a plain crossfade. Then the title lines rise out of their masks.
-    const pan = smoothstep(5650, 6450, smoothScroll);
+    const pan = smoothstep(5650, 6450, mostarScroll);
     const panSwing = Math.sin(Math.PI * pan); // 0 at both ends, 1 halfway
-    const musicLine1 = smoothstep(6350, 6750, smoothScroll);
-    const musicLine2 = smoothstep(6430, 6830, smoothScroll);
-    const worldBlur = worldExit * 18 * blurScale * motion;
+    const musicLine1 = smoothstep(6350, 6750, mostarScroll);
+    const musicLine2 = smoothstep(6430, 6830, mostarScroll);
+    const worldBlur = (worldExit * 18 + (1 - worldEnter) * 14) * blurScale * motion;
     const trainBlur = ((1 - trainSettle) * 16 + panSwing * 18) * blurScale * motion;
     const musicBlur = panSwing * 18 * blurScale * motion;
     const trainOpacity = trainIn * (motion ? 1 : 1 - pan);
@@ -262,7 +275,8 @@
     setVar("--frame2-scale", 1.06 + frame2.enter * 0.08 + frame2.exit * 0.08);
 
     setVar("--intro-copy-y", `${introExit * 90}px`);
-    setVar("--intro-copy-opacity", 1 - introExit);
+    // The intro copy and its tags live outside .world, so they only show once Mostar itself is on stage.
+    setVar("--intro-copy-opacity", worldEnter * (1 - introExit));
     setVar("--panel2-opacity", panel2Opacity);
     setVar("--panel2-y", `calc(-50% + ${-frame2.exit * 86 + (1 - frame2.enter) * 58}px)`);
     setVar("--panel3-opacity", panel3Opacity);
@@ -282,10 +296,19 @@
     setVar("--sights-left", `${sightsParentLeft}px`);
     setVar("--sights-screen-top", `${sightsScreenTop}px`);
 
-    setVar("--world-scale", 1 + worldExit * 0.45 * motion);
+    setVar("--abertura-opacity", 1 - openFade);
+    setVar("--abertura-visibility", openFade > 0.999 ? "hidden" : "visible");
+    setVar("--abertura-scale", 1 + openExit * 0.2 * motion);
+    setVar("--abertura-filter", openBlur > 0.05 ? `blur(${openBlur}px)` : "none");
+    setVar("--abertura-titulo-opacity", 1 - openTitleOut);
+    setVar("--abertura-titulo-y", `${openTitleOut * -70 * motion}px`);
+    setVar("--abertura-manifesto-opacity", openCopyOn);
+    setVar("--abertura-manifesto-y", `${((1 - openCopy) * 28 - openCopyOut * 46) * motion}px`);
+    setVar("--abertura-veu", openCopyOn * 0.85);
+    setVar("--world-scale", 1 + worldExit * 0.45 * motion + (1 - worldEnter) * 0.1 * motion);
     setVar("--world-filter", worldBlur > 0.05 ? `blur(${worldBlur}px)` : "none");
-    setVar("--world-opacity", 1 - worldFade);
-    setVar("--world-visibility", worldFade > 0.999 ? "hidden" : "visible");
+    setVar("--world-opacity", worldEnter * (1 - worldFade));
+    setVar("--world-visibility", worldEnter < 0.001 || worldFade > 0.999 ? "hidden" : "visible");
     setVar("--trem-opacity", trainOpacity);
     setVar("--trem-visibility", trainOnStage ? "visible" : "hidden");
     setVar("--trem-filter", trainOnStage && trainBlur > 0.05 ? `blur(${trainBlur}px)` : "none");
@@ -302,8 +325,8 @@
     setVar("--musica-l2", musicLine2);
     stage.classList.toggle("is-leaving", worldExit > 0.02);
 
-    if (smoothScroll > TRAIN_WARM_AT) warmTrain();
-    if (smoothScroll > MUSIC_WARM_AT) warmMusic();
+    if (mostarScroll > TRAIN_WARM_AT) warmTrain();
+    if (mostarScroll > MUSIC_WARM_AT) warmMusic();
     // Only the footage on stage plays.
     if (trainOnStage !== trainShown) {
       trainShown = trainOnStage;
@@ -316,7 +339,7 @@
       else if (musicVideo) musicVideo.pause();
     }
 
-    updateNav(smoothScroll);
+    updateNav(mostarScroll);
 
     const scrollSettling = Math.abs(smoothScroll - targetScroll) > 0.08;
     const mouseSettling =

@@ -84,6 +84,19 @@
   --musica-l1: 0;
   --musica-l2: 0;
   --musica-ceu: #dbe6ee; /* the turntable's sky: any margin and the blurred backdrop read as sky */
+  /* Abertura → Mostar (script.js): the window holds the question, then the copy, then it pushes forward
+     and blurs while Mostar arrives. */
+  --abertura: 1700px; /* how much scroll the opening takes before Mostar's own choreography */
+  --abertura-opacity: 1;
+  --abertura-visibility: visible;
+  --abertura-scale: 1;
+  --abertura-filter: none;
+  --abertura-titulo-opacity: 1;
+  --abertura-titulo-y: 0px;
+  --abertura-manifesto-opacity: 0;
+  --abertura-manifesto-y: 28px;
+  --abertura-veu: 0;
+  --cabine: #1b1e24; /* the cabin wall around the window */
   --ink: #111411;
   --paper: #fdf1e1;
   --scene-title: 4.75rem; /* scene headings (story panels and the train); steps down per breakpoint */
@@ -125,11 +138,12 @@ button {
 
 /* Scroll rig */
 
-/* 6900px of choreography while the stage stays pinned (#musica is the last stop). Measured from the stage
-   height rather than the screen, so on screens shorter than --stage-min the stage is still pinned there. */
+/* The opening plus 6900px of Mostar's choreography, all with the stage pinned (#musica is the last stop).
+   Measured from the stage height rather than the screen, so on screens shorter than --stage-min the stage
+   is still pinned there. */
 .cinema-scroll {
   position: relative;
-  height: calc(var(--stage-h) + 6900px);
+  height: calc(var(--stage-h) + var(--abertura) + 6900px);
 }
 
 /* Menu targets: the scroll distance where each scene is fully on stage (script.js uses the same map). */
@@ -142,23 +156,23 @@ button {
 }
 
 #ponte {
-  top: 1100px;
+  top: calc(var(--abertura) + 1100px);
 }
 
 #bazar {
-  top: 2340px;
+  top: calc(var(--abertura) + 2340px);
 }
 
 #roteiros {
-  top: 3700px;
+  top: calc(var(--abertura) + 3700px);
 }
 
 #trem {
-  top: 5300px;
+  top: calc(var(--abertura) + 5300px);
 }
 
 #musica {
-  top: 6900px;
+  top: calc(var(--abertura) + 6900px);
 }
 
 /* overflow: clip (not just hidden) so focusing an off-screen card can't scroll the scene sideways. */
@@ -509,6 +523,138 @@ button {
   );
 }
 
+/* Abertura: the cabin window that opens the page. The sky is the same file as Mostar's own sky layer, so
+   nothing new loads; the cabin around the window is drawn in CSS. It shares the loading cover's layer
+   (7) and the cover paints last, so nothing shows until the sky is decoded. */
+
+/* Sized to the screen rather than the stage (like the other scenes' copy), so on screens shorter than the
+   stage the window and the copy stay centred in view. */
+.abertura {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100vh;
+  z-index: 7;
+  overflow: hidden;
+  overflow: clip;
+  opacity: var(--abertura-opacity);
+  visibility: var(--abertura-visibility);
+  filter: var(--abertura-filter);
+}
+
+/* Cabin light: a little lift around the window and dark corners. */
+.abertura::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(120% 90% at 50% 46%, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0) 46%, rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+
+.abertura-vista {
+  position: absolute;
+  inset: 0;
+  transform: scale(var(--abertura-scale));
+  transform-origin: 50% 46%;
+}
+
+.abertura-ceu {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 62%;
+  filter: saturate(1.08) contrast(1.04);
+}
+
+/* The window: the wide spread shadow paints the cabin around the opening, so the sky only shows inside
+   it; the inset rings are the frame's edge and the shade the glass throws. */
+.abertura-janela {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  height: min(78vh, 132vw);
+  width: calc(min(78vh, 132vw) * 0.68);
+  border-radius: 46% / 38%;
+  box-shadow:
+    0 0 0 22px rgba(255, 255, 255, 0.045),
+    0 0 0 200vmax var(--cabine),
+    inset 0 0 0 9px rgba(12, 14, 19, 0.5),
+    inset 0 34px 70px rgba(0, 0, 0, 0.3),
+    inset 0 -26px 60px rgba(0, 0, 0, 0.22);
+  transform: translate3d(-50%, -50%, 0) scale(var(--abertura-scale));
+  pointer-events: none;
+}
+
+/* The pane's reflection. */
+.abertura-janela::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-radius: inherit;
+  background: linear-gradient(148deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.06) 26%, rgba(255, 255, 255, 0) 46%);
+}
+
+/* Dims the view under the manifesto, and only while it is on screen. */
+.abertura-veu {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(120% 80% at 50% 46%, rgba(4, 8, 16, 0.72), rgba(4, 8, 16, 0.4) 62%, rgba(4, 8, 16, 0.24));
+  opacity: var(--abertura-veu);
+  pointer-events: none;
+}
+
+/* Sized to the screen rather than the stage, like the other scenes' copy. */
+.abertura-conteudo {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.abertura-titulo {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(760px, calc(100vw - 42px));
+  text-align: center;
+  opacity: var(--abertura-titulo-opacity);
+  transform: translate3d(-50%, calc(-50% + var(--abertura-titulo-y)), 0);
+}
+
+.abertura-manifesto {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(620px, calc(100vw - 42px));
+  text-align: center;
+  opacity: var(--abertura-manifesto-opacity);
+  transform: translate3d(-50%, calc(-50% + var(--abertura-manifesto-y)), 0);
+}
+
+.abertura-manifesto p {
+  margin: 0;
+  color: var(--paper);
+  font-size: 1.14rem;
+  font-weight: 500;
+  line-height: 1.42;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
+}
+
+.abertura-manifesto p + p {
+  margin-top: 18px;
+}
+
+.abertura-convite {
+  margin-top: 32px;
+  font-family: "Ogg Medium", Georgia, "Times New Roman", serif;
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  line-height: 1.12;
+}
+
 /* Trem: the scene after Roteiros. The footage settles from slightly closer and the window frame
    from much closer, so the carriage reads as arriving around the viewer. */
 
@@ -738,8 +884,9 @@ button {
   will-change: transform, opacity;
 }
 
-/* Scene headings and copy share one type style, the train and music scenes included. */
+/* Scene headings and copy share one type style, the opening, train and music scenes included. */
 .story-panel h2,
+.abertura-titulo,
 .trem-titulo,
 .musica-titulo {
   margin: 0;
@@ -940,7 +1087,8 @@ button {
 
   .intro-copy p,
   .story-panel p,
-  .trem-texto {
+  .trem-texto,
+  .abertura-manifesto p {
     font-size: 1rem;
   }
 

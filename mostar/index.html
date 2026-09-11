@@ -8,9 +8,9 @@
   <meta name="robots" content="noindex" />
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/shared/faixa.css?v=2" />
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
   <script>document.documentElement.classList.add("is-loading");</script>
-  <script src="script.js?v=7" defer></script>
+  <script src="script.js?v=8" defer></script>
 </head>
 <body>
   <main class="site-shell">
@@ -35,6 +35,28 @@
             <a href="#musica">Música</a>
           </nav>
         </header>
+
+        <!-- Abertura: a janela antes de Mostar. Usa o mesmo arquivo de céu das camadas de Mostar, então
+             nada novo é baixado, e a cabine em volta é desenhada em CSS. -->
+        <section class="abertura" aria-label="Abertura">
+          <div class="abertura-vista" aria-hidden="true">
+            <img class="abertura-ceu" src="img/sky-1920.webp"
+              srcset="img/sky-1280.webp 1280w, img/sky-1920.webp 1920w, img/sky-2560.webp 2560w, img/sky-3840.webp 3840w"
+              sizes="(max-width: 640px) 200vw, 130vw"
+              width="3840" height="2160" alt="" fetchpriority="high" />
+          </div>
+          <div class="abertura-janela" aria-hidden="true"></div>
+          <div class="abertura-veu" aria-hidden="true"></div>
+
+          <div class="abertura-conteudo">
+            <h2 class="abertura-titulo">pronto para <br />o seu próximo destino?</h2>
+            <div class="abertura-manifesto">
+              <p>Nada aqui é comum. Há mais de três décadas, a PRIMETOUR traduz desejos em experiências e viagens que ampliam a percepção do mundo.</p>
+              <p>Excelência, cuidado e curadoria em jornadas feitas sob medida, pensadas para permanecer muito depois do retorno.</p>
+              <p class="abertura-convite">Viaje conosco pela Bósnia e Herzegovina</p>
+            </div>
+          </div>
+        </section>
 
         <div class="world">
           <img class="scene-img sky-img" src="img/sky-1920.webp"
