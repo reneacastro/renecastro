@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trem · Primetour</title>
+  <meta name="description" content="Paisagens pela janela de um trem: página de teste da Primetour." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap" />
+  <link rel="stylesheet" href="/shared/faixa.css?v=1" />
+  <link rel="stylesheet" href="styles.css?v=1" />
+  <script src="script.js?v=1" defer></script>
+</head>
+<body>
+  <main class="trem">
+    <header class="site-header" aria-label="Navegação principal">
+      <a class="site-logo" href="/mostar/">
+        <img src="/shared/primetour-logo-branco.webp" width="500" height="141" alt="Primetour Viagens &amp; Experiências" />
+      </a>
+      <nav class="site-nav" aria-label="Menu principal">
+        <a href="/mostar/#inicio">Início</a>
+        <a href="/mostar/#ponte">Ponte</a>
+        <a href="/mostar/#bazar">Bazar</a>
+        <a href="/mostar/#roteiros">Roteiros</a>
+        <a href="/trem/" class="is-current" aria-current="page">Trem</a>
+      </nav>
+    </header>
+
+    <!-- Only the opening scene downloads up front; script.js loads the others on demand. -->
+    <div class="trem-paisagens" aria-hidden="true">
+      <video class="trem-video is-active" autoplay muted loop playsinline preload="auto" poster="media/hora-dourada.webp">
+        <source src="media/hora-dourada-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+        <source src="media/hora-dourada-1080.mp4" type="video/mp4" />
+      </video>
+      <video class="trem-video" muted loop playsinline preload="none" poster="media/aguas-calmas.webp">
+        <source src="media/aguas-calmas-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+        <source src="media/aguas-calmas-1080.mp4" type="video/mp4" />
+      </video>
+      <video class="trem-video" muted loop playsinline preload="none" poster="media/mata-fechada.webp">
+        <source src="media/mata-fechada-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+        <source src="media/mata-fechada-1080.mp4" type="video/mp4" />
+      </video>
+      <video class="trem-video" muted loop playsinline preload="none" poster="media/aurora.webp">
+        <source src="media/aurora-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+        <source src="media/aurora-1080.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <img class="trem-janela" src="media/janela-1920.webp"
+      srcset="media/janela-1280.webp 1280w, media/janela-1920.webp 1920w, media/janela-2752.webp 2752w"
+      sizes="(max-aspect-ratio: 16/9) 180vh, 103vw"
+      width="2752" height="1536" alt="" />
+
+    <div class="trem-conteudo">
+      <section class="trem-hero" aria-label="Apresentação">
+        <p class="trem-selo liquid-glass">Mais de 10 mil mentes já encontraram sua clareza</p>
+        <h1 class="trem-titulo">Clareza em um universo<br />infinitamente ruidoso</h1>
+        <p class="trem-texto">Eleve-se acima do caos das notificações, da rolagem infinita e das demandas sem fim. Descubra como proteger sua presença e criar com intenção.</p>
+        <form class="trem-email liquid-glass">
+          <label class="sr-only" for="trem-email">Seu melhor e-mail</label>
+          <input id="trem-email" name="email" type="email" placeholder="Seu melhor e-mail" autocomplete="email" required />
+          <button type="submit">Acesso antecipado</button>
+        </form>
+        <p class="trem-aviso" role="status" hidden>Página de teste: nenhum e-mail é enviado.</p>
+        <div class="trem-cenas" role="group" aria-label="Paisagem pela janela">
+          <button type="button" class="is-active" aria-pressed="true">Hora dourada</button>
+          <button type="button" aria-pressed="false">Águas calmas</button>
+          <button type="button" aria-pressed="false">Mata fechada</button>
+          <button type="button" aria-pressed="false">Aurora</button>
+        </div>
+      </section>
+
+      <ul class="trem-numeros" aria-label="Números">
+        <li>60+ sessões profundas</li>
+        <li>12.000+ criadores</li>
+        <li>4,8 de satisfação</li>
+        <li>Design com intenção</li>
+      </ul>
+    </div>
+  </main>
+</body>
+</html>

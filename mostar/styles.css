@@ -2,6 +2,7 @@
  * Display face: the prompt's Ogg Text file (dcym8fthxf5uu.cloudfront.net/fonts/.../OggText-Medium.woff2) is served
  * without Access-Control-Allow-Origin, so browsers block it on any other origin. "Ogg Medium" stays first in the
  * stacks below and Georgia renders until a licensed, CORS-enabled copy is hosted.
+ * The blue Primetour band (header) lives in /shared/faixa.css, shared with the other test pages.
  */
 
 :root {
@@ -64,12 +65,6 @@
   --ink: #111411;
   --paper: #fdf1e1;
   --shadow: rgba(0, 0, 0, 0.32);
-  /* Primetour: "o azul da marca" e o dourado (--brand-gold do tema escuro) do Gestor, css/base.css */
-  --brand-blue: #242362;
-  --brand-gold: #e0c588;
-  --band-text: rgba(255, 255, 255, 0.84);
-  --band-h: 64px;
-  --logo-h: 38px;
   --sky-fallback: #79b7dd;
   font-family: Inter, Satoshi, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--paper);
@@ -165,7 +160,6 @@ button {
 .sky-img,
 .shade,
 .scene-img,
-.site-header,
 .sights-slider,
 .sights-controls,
 .hero-title,
@@ -179,82 +173,6 @@ button {
   overflow: hidden;
   overflow: clip;
   background: var(--sky-fallback);
-}
-
-/* Header: faixa azul Primetour com o menu de cenas */
-
-.site-header {
-  z-index: 20;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--band-h);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  padding: 0 40px;
-  background: var(--brand-blue);
-  pointer-events: auto;
-}
-
-.site-logo {
-  display: flex;
-  flex: 0 0 auto;
-  border-radius: 4px;
-}
-
-.site-logo img {
-  display: block;
-  width: auto;
-  height: var(--logo-h);
-}
-
-.site-nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(24px, 2.6vw, 40px);
-}
-
-.site-nav a {
-  position: relative;
-  padding: 8px 0;
-  color: var(--band-text);
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 200ms ease;
-}
-
-.site-nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--brand-gold);
-  transform: scaleX(0);
-  transition: transform 240ms ease;
-}
-
-.site-nav a:hover,
-.site-nav a.is-current {
-  color: var(--brand-gold);
-}
-
-.site-nav a.is-current::after {
-  transform: scaleX(1);
-}
-
-.site-logo:focus-visible,
-.site-nav a:focus-visible {
-  outline: 2px solid var(--brand-gold);
-  outline-offset: 4px;
 }
 
 /* Scene layers */
@@ -741,35 +659,8 @@ button {
 }
 
 @media (max-width: 640px) {
-  :root {
-    --band-h: 56px;
-    --logo-h: 30px;
-  }
-
   .stage {
     min-height: 640px;
-  }
-
-  .site-header {
-    gap: 16px;
-    padding: 0 16px;
-  }
-
-  /* All four scenes stay in one row inside the band; if a very narrow screen can't fit them, the
-     row scrolls sideways instead of wrapping. */
-  .site-nav {
-    gap: 14px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .site-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .site-nav a {
-    font-size: 14px;
-    letter-spacing: 0;
   }
 
   .hero-title {
@@ -886,26 +777,9 @@ button {
   }
 }
 
+/* Narrow phones: card titles use the full width (they sit below the pin) and a size down, so
+   "War Photo Exhibition" and the two-line descriptions still fit. */
 @media (max-width: 380px) {
-  :root {
-    --logo-h: 26px;
-  }
-
-  .site-header {
-    gap: 12px;
-    padding: 0 12px;
-  }
-
-  .site-nav {
-    gap: 11px;
-  }
-
-  .site-nav a {
-    font-size: 13px;
-  }
-
-  /* Narrow phones: card titles use the full width (they sit below the pin) and a size down, so
-     "War Photo Exhibition" and the two-line descriptions still fit. */
   .sight-card h3 {
     max-width: 100%;
     font-size: 21px;
