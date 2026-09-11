@@ -12,9 +12,7 @@
   const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
   const openingLayers = Array.from(document.querySelectorAll(".scene-img:not(.frame-two-img)"));
   const trainScene = document.querySelector(".trem-cena");
-  const trainVideos = Array.from(document.querySelectorAll(".trem-video"));
-  const trainButtons = Array.from(document.querySelectorAll(".trem-cenas button"));
-  const trainSwitcher = document.querySelector(".trem-cenas");
+  const trainVideo = document.querySelector(".trem-video");
   const trainWindow = document.querySelector(".trem-janela");
 
   if (!section || !stage || !backStack) {
@@ -35,12 +33,7 @@
   let activeSight = originalSightCount;
   let currentScene = "";
 
-  // Train scene state (the landscape switcher follows the train prompt: 1s crossfade, clicks ignored meanwhile).
-  const TRAIN_FADE_MS = 1000;
-  const TRAIN_DARK_SCENE = 2; // "Mata fechada": the copy turns #182C41 on that bright footage
   const TRAIN_WARM_AT = 3200; // start fetching the carriage once the visitor reaches Roteiros
-  let trainActive = 0;
-  let trainCooling = false;
   let trainWarmed = false;
   let trainShown = false;
 
@@ -84,50 +77,25 @@
   };
 
   // Train footage: nothing downloads until the visitor reaches Roteiros (or lands on #trem); then the
-  // posters, the window and the chosen landscape load. Each poster is the video's first frame.
-  const warmVideo = (video) => {
-    if (!video || video.preload === "auto") return;
-    video.preload = "auto";
-    video.load();
-  };
-
-  const playTrain = (video) => {
-    if (!video || reduceMotion.matches) return;
-    const attempt = video.play();
+  // poster (the video's first frame), the window and the footage load.
+  const playTrain = () => {
+    if (!trainVideo || reduceMotion.matches) return;
+    const attempt = trainVideo.play();
     if (attempt) attempt.catch(() => {});
   };
 
   const warmTrain = () => {
     if (trainWarmed || !trainScene) return;
     trainWarmed = true;
-    trainVideos.forEach((video) => {
-      if (video.dataset.poster) video.poster = video.dataset.poster;
-    });
+    if (trainVideo) {
+      if (trainVideo.dataset.poster) trainVideo.poster = trainVideo.dataset.poster;
+      trainVideo.preload = "auto";
+      trainVideo.load();
+    }
     if (trainWindow && trainWindow.dataset.srcset) {
       trainWindow.srcset = trainWindow.dataset.srcset;
       trainWindow.src = trainWindow.dataset.src;
     }
-    warmVideo(trainVideos[trainActive]);
-  };
-
-  const selectTrainScene = (index) => {
-    if (!trainScene || index === trainActive || trainCooling) return;
-    trainCooling = true;
-    const previous = trainVideos[trainActive];
-    const next = trainVideos[index];
-    warmVideo(next);
-    playTrain(next);
-    trainActive = index;
-    trainVideos.forEach((video, i) => video.classList.toggle("is-active", i === index));
-    trainButtons.forEach((button, i) => {
-      button.classList.toggle("is-active", i === index);
-      button.setAttribute("aria-pressed", String(i === index));
-    });
-    trainScene.classList.toggle("is-escuro", index === TRAIN_DARK_SCENE);
-    window.setTimeout(() => {
-      previous.pause();
-      trainCooling = false;
-    }, TRAIN_FADE_MS);
   };
 
   function requestTick() {
@@ -268,14 +236,13 @@
     setVar("--trem-text-opacity", trainText);
     setVar("--trem-text-y", `${(1 - trainText) * 24 * motion}px`);
     stage.classList.toggle("is-leaving", worldExit > 0.02);
-    if (trainScene) trainScene.classList.toggle("is-ready", trainText > 0.98);
 
     if (smoothScroll > TRAIN_WARM_AT) warmTrain();
     const shown = trainIn > 0.001;
     if (shown !== trainShown) {
       trainShown = shown;
-      if (shown) playTrain(trainVideos[trainActive]);
-      else trainVideos.forEach((video) => video.pause());
+      if (shown) playTrain();
+      else if (trainVideo) trainVideo.pause();
     }
 
     updateNav(smoothScroll);
@@ -371,22 +338,13 @@
   if (sightPrev) sightPrev.addEventListener("click", () => moveSightSlider(-1));
   if (sightNext) sightNext.addEventListener("click", () => moveSightSlider(1));
 
-  trainButtons.forEach((button, index) => button.addEventListener("click", () => selectTrainScene(index)));
-  if (trainSwitcher) {
-    // Touch devices skip this warm-up: on a phone only the landscape that is tapped gets downloaded.
-    const warmAllTrain = () => trainVideos.forEach(warmVideo);
-    if (window.matchMedia("(hover: hover)").matches) {
-      trainSwitcher.addEventListener("pointerenter", warmAllTrain, { once: true });
-    }
-    trainSwitcher.addEventListener("focusin", (event) => {
-      if (event.target.matches(":focus-visible")) warmAllTrain();
-    });
-  }
-
-  // Reduced motion: the train shows posters instead of moving footage (its window stops rocking in CSS).
+  // Reduced motion: the train shows its poster instead of moving footage (its window stops rocking in CSS).
   const applyMotionPreference = () => {
-    if (reduceMotion.matches) trainVideos.forEach((video) => video.pause());
-    else if (trainShown) playTrain(trainVideos[trainActive]);
+    if (reduceMotion.matches) {
+      if (trainVideo) trainVideo.pause();
+    } else if (trainShown) {
+      playTrain();
+    }
     requestTick();
   };
   if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", applyMotionPreference);

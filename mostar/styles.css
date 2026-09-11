@@ -74,10 +74,12 @@
   --trem-frame-scale: 1.6;
   --trem-text-opacity: 0;
   --trem-text-y: 24px;
-  --trem-escuro: #182c41; /* "Mata fechada": the train prompt darkens the copy on that bright footage */
   --trem-parapeito: 22vh; /* wall under the window: the window image ends at ~78% of the screen */
   --ink: #111411;
   --paper: #fdf1e1;
+  --scene-title: 4.75rem; /* scene headings (story panels and the train); steps down per breakpoint */
+  --stage-min: 620px; /* the stage never gets shorter than this: on shorter screens it runs past the bottom */
+  --stage-h: max(100vh, var(--stage-min));
   --shadow: rgba(0, 0, 0, 0.32);
   --sky-fallback: #79b7dd;
   font-family: Inter, Satoshi, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -114,9 +116,11 @@ button {
 
 /* Scroll rig */
 
+/* 5300px of choreography while the stage stays pinned (#trem is the last stop). Measured from the stage
+   height rather than the screen, so on screens shorter than --stage-min the stage is still pinned at #trem. */
 .cinema-scroll {
   position: relative;
-  height: calc(100vh + 5300px);
+  height: calc(var(--stage-h) + 5300px);
 }
 
 /* Menu targets: the scroll distance where each scene is fully on stage (script.js uses the same map). */
@@ -149,7 +153,7 @@ button {
   position: sticky;
   top: 0;
   height: 100vh;
-  min-height: 620px;
+  min-height: var(--stage-min);
   overflow: hidden;
   overflow: clip;
   isolation: isolate;
@@ -496,7 +500,6 @@ button {
    from much closer, so the carriage reads as arriving around the viewer. */
 
 .trem-cena {
-  --trem-ink: var(--paper);
   position: absolute;
   inset: 0;
   z-index: 8;
@@ -507,18 +510,14 @@ button {
   filter: var(--trem-filter);
 }
 
-.trem-cena.is-escuro {
-  --trem-ink: var(--trem-escuro);
-}
-
-.trem-paisagens,
+.trem-paisagem,
 .trem-janela-quadro {
   position: absolute;
   inset: 0;
   transform-origin: 50% 42%;
 }
 
-.trem-paisagens {
+.trem-paisagem {
   transform: scale(var(--trem-bg-scale));
 }
 
@@ -535,15 +534,6 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.trem-video {
-  opacity: 0;
-  transition: opacity 1000ms ease-in-out;
-}
-
-.trem-video.is-active {
-  opacity: 1;
 }
 
 /* The window rocks with the carriage; scale(1.03) keeps its edges off-screen while it moves. */
@@ -563,10 +553,13 @@ button {
   }
 }
 
+/* The copy is centred on the screen rather than on the stage, so on screens shorter than the stage it is
+   still in view at #trem. */
 .trem-conteudo {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto;
   z-index: 2;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -575,46 +568,6 @@ button {
   text-align: center;
   opacity: var(--trem-text-opacity);
   transform: translate3d(0, var(--trem-text-y), 0);
-}
-
-.trem-cenas {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 14px;
-  margin-top: 28px;
-  pointer-events: none;
-}
-
-.trem-cena.is-ready .trem-cenas {
-  pointer-events: auto;
-}
-
-.trem-cenas button {
-  padding: 4px 0;
-  border-bottom: 1px solid transparent;
-  background: none;
-  color: var(--trem-ink);
-  font-size: 12px;
-  font-weight: 500;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-  opacity: 0.55;
-  cursor: pointer;
-  transition: opacity 200ms ease, color 700ms ease, border-color 700ms ease;
-}
-
-.trem-cenas button:hover {
-  opacity: 0.85;
-}
-
-.trem-cenas button.is-active {
-  opacity: 1;
-  border-bottom-color: currentColor;
-}
-
-.trem-cenas button:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 4px;
 }
 
 /* Copy */
@@ -679,7 +632,7 @@ button {
   margin: 0;
   color: #fdf1e1;
   font-family: "Ogg Medium", Georgia, "Times New Roman", serif;
-  font-size: 4.75rem;
+  font-size: var(--scene-title);
   font-weight: 500;
   line-height: 0.95;
   text-shadow: 0 16px 38px var(--shadow);
@@ -696,16 +649,12 @@ button {
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
 }
 
-.trem-titulo,
-.trem-texto {
-  color: var(--trem-ink);
-  transition: color 700ms ease, text-shadow 700ms ease;
-}
-
-.trem-cena.is-escuro .trem-titulo,
-.trem-cena.is-escuro .trem-texto,
-.trem-cena.is-escuro .trem-cenas button {
-  text-shadow: none;
+/* The train heading is longer than the others. Its lines are balanced (on a phone it wraps freely), and
+   on shorter screens it steps down a little so its longest line stays inside the window glass, which
+   there is about as wide as the stage is tall. */
+.trem-titulo {
+  font-size: min(var(--scene-title), calc(var(--stage-h) * 0.076));
+  text-wrap: balance;
 }
 
 .story-panel-bridge {
@@ -777,9 +726,8 @@ button {
     font-size: 11rem;
   }
 
-  .story-panel h2,
-  .trem-titulo {
-    font-size: 4.1rem;
+  :root {
+    --scene-title: 4.1rem;
   }
 }
 
@@ -797,9 +745,8 @@ button {
     width: 132vw;
   }
 
-  .story-panel h2,
-  .trem-titulo {
-    font-size: 3.2rem;
+  :root {
+    --scene-title: 3.2rem;
   }
 
   .facts {
@@ -829,20 +776,10 @@ button {
   }
 }
 
-@media (min-width: 641px) {
-  .trem-cenas {
-    gap: 8px 28px;
-    margin-top: 32px;
-  }
-
-  .trem-cenas button {
-    font-size: 13px;
-  }
-}
-
 @media (max-width: 640px) {
-  .stage {
-    min-height: 640px;
+  :root {
+    --stage-min: 640px;
+    --scene-title: 2.45rem;
   }
 
   .hero-title {
@@ -906,16 +843,6 @@ button {
     top: 32%;
   }
 
-  .story-panel h2,
-  .trem-titulo {
-    font-size: 2.45rem;
-  }
-
-  /* The train heading is longer than the others: on a phone it wraps freely, balanced. */
-  .trem-titulo {
-    text-wrap: balance;
-  }
-
   .trem-titulo br {
     display: none;
   }
@@ -971,7 +898,7 @@ button {
 }
 
 /* Narrow phones: card titles use the full width (they sit below the pin) and a size down, so
-   "War Photo Exhibition" and the two-line descriptions still fit; the four landscapes go 2 × 2. */
+   "War Photo Exhibition" and the two-line descriptions still fit. */
 @media (max-width: 380px) {
   .sight-card h3 {
     max-width: 100%;
@@ -980,15 +907,6 @@ button {
 
   .sight-card p {
     font-size: 15px;
-  }
-}
-
-@media (max-width: 359px) {
-  .trem-cenas {
-    display: grid;
-    grid-template-columns: repeat(2, auto);
-    justify-content: center;
-    gap: 8px 24px;
   }
 }
 
@@ -1003,8 +921,7 @@ button {
   .intro-copy,
   .story-panel,
   .sights-track,
-  .sights-slider,
-  .trem-video {
+  .sights-slider {
     transition: none;
   }
 

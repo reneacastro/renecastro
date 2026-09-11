@@ -8,9 +8,9 @@
   <meta name="robots" content="noindex" />
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/shared/faixa.css?v=1" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
   <script>document.documentElement.classList.add("is-loading");</script>
-  <script src="script.js?v=5" defer></script>
+  <script src="script.js?v=6" defer></script>
 </head>
 <body>
   <main class="site-shell">
@@ -114,22 +114,10 @@
           <div class="shade"></div>
         </div>
 
-        <!-- Trem: after Roteiros. Posters, window and footage load only once the visitor reaches
-             Roteiros (script.js); only the chosen landscape downloads. -->
+        <!-- Trem: after Roteiros. The poster, the window and the footage load only once the visitor
+             reaches Roteiros (script.js). -->
         <section class="trem-cena" aria-label="A viagem de trem">
-          <div class="trem-paisagens" aria-hidden="true">
-            <video class="trem-video is-active" muted loop playsinline preload="none" data-poster="trem/hora-dourada.webp">
-              <source src="trem/hora-dourada-720.mp4" type="video/mp4" media="(max-width: 767px)" />
-              <source src="trem/hora-dourada-1080.mp4" type="video/mp4" />
-            </video>
-            <video class="trem-video" muted loop playsinline preload="none" data-poster="trem/aguas-calmas.webp">
-              <source src="trem/aguas-calmas-720.mp4" type="video/mp4" media="(max-width: 767px)" />
-              <source src="trem/aguas-calmas-1080.mp4" type="video/mp4" />
-            </video>
-            <video class="trem-video" muted loop playsinline preload="none" data-poster="trem/mata-fechada.webp">
-              <source src="trem/mata-fechada-720.mp4" type="video/mp4" media="(max-width: 767px)" />
-              <source src="trem/mata-fechada-1080.mp4" type="video/mp4" />
-            </video>
+          <div class="trem-paisagem" aria-hidden="true">
             <video class="trem-video" muted loop playsinline preload="none" data-poster="trem/aurora.webp">
               <source src="trem/aurora-720.mp4" type="video/mp4" media="(max-width: 767px)" />
               <source src="trem/aurora-1080.mp4" type="video/mp4" />
@@ -144,14 +132,8 @@
           </div>
 
           <div class="trem-conteudo">
-            <h2 class="trem-titulo">Clareza em um universo <br />infinitamente ruidoso</h2>
-            <p class="trem-texto">Eleve-se acima do caos das notificações, da rolagem infinita e das demandas sem fim. Descubra como proteger sua presença e criar com intenção.</p>
-            <div class="trem-cenas" role="group" aria-label="Paisagem pela janela">
-              <button type="button" class="is-active" aria-pressed="true">Hora dourada</button>
-              <button type="button" aria-pressed="false">Águas calmas</button>
-              <button type="button" aria-pressed="false">Mata fechada</button>
-              <button type="button" aria-pressed="false">Aurora</button>
-            </div>
+            <h2 class="trem-titulo">Agora, seguimos de trem <br />para o interior da Bósnia.</h2>
+            <p class="trem-texto">Conheça cidades medievais, vilarejos pitorescos e uma atmosfera sem igual.</p>
           </div>
         </section>
 
