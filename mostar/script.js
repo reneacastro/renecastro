@@ -14,6 +14,7 @@
   const trainScene = document.querySelector(".trem-cena");
   const trainVideo = document.querySelector(".trem-video");
   const trainWindow = document.querySelector(".trem-janela");
+  const openingScene = document.querySelector(".abertura");
   const musicScene = document.querySelector(".musica-cena");
   const musicVideo = document.querySelector(".musica-video");
   const musicBackdrop = document.querySelector(".musica-fundo");
@@ -413,7 +414,11 @@
   Promise.race([
     Promise.all(openingLayers.map((img) => (img.decode ? img.decode().catch(() => {}) : null))),
     new Promise((resolve) => window.setTimeout(resolve, 3000)),
-  ]).then(() => root.classList.remove("is-loading"));
+  ]).then(() => {
+    root.classList.remove("is-loading");
+    // The shade only starts sliding up once the scene is actually on screen.
+    if (openingScene) window.setTimeout(() => openingScene.classList.add("is-aberta"), 140);
+  });
 
   window.addEventListener("scroll", requestTick, { passive: true });
   window.addEventListener("resize", () => {

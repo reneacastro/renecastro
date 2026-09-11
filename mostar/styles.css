@@ -96,6 +96,9 @@
   --abertura-manifesto-opacity: 0;
   --abertura-manifesto-y: 28px;
   --abertura-veu: 0;
+  /* The window unit; the frame and the copy follow it. Never taller than the space under the band. */
+  --janela-h: min(84vh, 128vw, calc(100vh - var(--band-h) - 28px));
+  --janela-w: calc(var(--janela-h) * 0.68);
   --cabine: #1b1e24; /* the cabin wall around the window */
   --ink: #111411;
   --paper: #fdf1e1;
@@ -541,67 +544,194 @@ button {
   filter: var(--abertura-filter);
 }
 
-/* Cabin light: a little lift around the window and dark corners. */
-.abertura::after {
-  content: "";
+/* The window unit, centred in the space under the band: the panel it sits in, the shadow it throws on the
+   cabin wall, and the wall itself (the wide spread), which leaves only the opening showing. */
+.abertura-janela {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: radial-gradient(120% 90% at 50% 46%, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0) 46%, rgba(0, 0, 0, 0.5));
+  top: calc(var(--band-h) + (100vh - var(--band-h)) / 2);
+  left: 50%;
+  width: var(--janela-w);
+  height: var(--janela-h);
+  border-radius: 46% / 38%;
+  overflow: hidden;
+  overflow: clip;
+  box-shadow:
+    0 0 0 13px #262a31,
+    0 0 0 14px rgba(255, 255, 255, 0.05),
+    0 26px 70px rgba(0, 0, 0, 0.55),
+    0 0 0 200vmax var(--cabine),
+    inset 0 0 0 8px rgba(14, 16, 21, 0.72),
+    inset 0 3px 0 rgba(255, 255, 255, 0.07),
+    inset 0 30px 60px rgba(0, 0, 0, 0.32),
+    inset 0 -24px 56px rgba(0, 0, 0, 0.24);
+  transform: translate3d(-50%, -50%, 0) scale(var(--abertura-scale));
+  /* Engine hum: translate and rotate are their own properties, so they don't fight the transform above. */
+  animation: abertura-tremor 7s ease-in-out infinite;
   pointer-events: none;
 }
 
-.abertura-vista {
-  position: absolute;
-  inset: 0;
-  transform: scale(var(--abertura-scale));
-  transform-origin: 50% 46%;
+@keyframes abertura-tremor {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+
+  50% {
+    translate: 0 0.6px;
+    rotate: 0.05deg;
+  }
 }
 
+.abertura-vidro {
+  position: absolute;
+  inset: 0;
+}
+
+/* The sky drifts past the window. */
 .abertura-ceu {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 62%;
-  filter: saturate(1.08) contrast(1.04);
+  object-position: center 58%;
+  filter: saturate(1.06) contrast(1.03);
+  animation: abertura-deriva 70s linear infinite alternate;
 }
 
-/* The window: the wide spread shadow paints the cabin around the opening, so the sky only shows inside
-   it; the inset rings are the frame's edge and the shade the glass throws. */
-.abertura-janela {
+@keyframes abertura-deriva {
+  from {
+    transform: translate3d(-3%, 1%, 0) scale(1.08);
+  }
+
+  to {
+    transform: translate3d(3%, -1.5%, 0) scale(1.14);
+  }
+}
+
+/* Altitude: deep blue up top, warm haze at the horizon, and a soft dip behind the copy. */
+.abertura-altitude {
   position: absolute;
-  top: 46%;
+  inset: 0;
+  background:
+    radial-gradient(62% 42% at 50% 44%, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0) 72%),
+    linear-gradient(180deg, rgba(11, 38, 82, 0.6) 0%, rgba(35, 86, 140, 0.26) 34%, rgba(255, 236, 209, 0.12) 72%, rgba(255, 214, 172, 0.32) 100%);
+}
+
+/* The pane's reflection, drifting with the light. */
+.abertura-reflexo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(146deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.08) 22%, rgba(255, 255, 255, 0) 46%);
+  mix-blend-mode: screen;
+  animation: abertura-reflexo 26s ease-in-out infinite alternate;
+}
+
+@keyframes abertura-reflexo {
+  from {
+    transform: translate3d(-6%, -4%, 0);
+    opacity: 0.7;
+  }
+
+  to {
+    transform: translate3d(6%, 4%, 0);
+    opacity: 1;
+  }
+}
+
+/* The shade: down when the page lands, and up once the scene is on screen (script.js adds .is-aberta as
+   soon as the opening layers are decoded). */
+.abertura-persiana {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(180deg, #333841 0%, #272b33 62%, #1d2027 100%);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55), inset 0 -2px 0 rgba(255, 255, 255, 0.06);
+  transform: translateY(0);
+  transition: transform 2s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+}
+
+/* Its handle. */
+.abertura-persiana::after {
+  content: "";
+  position: absolute;
+  bottom: 3.5%;
   left: 50%;
-  height: min(78vh, 132vw);
-  width: calc(min(78vh, 132vw) * 0.68);
-  border-radius: 46% / 38%;
-  box-shadow:
-    0 0 0 22px rgba(255, 255, 255, 0.045),
-    0 0 0 200vmax var(--cabine),
-    inset 0 0 0 9px rgba(12, 14, 19, 0.5),
-    inset 0 34px 70px rgba(0, 0, 0, 0.3),
-    inset 0 -26px 60px rgba(0, 0, 0, 0.22);
-  transform: translate3d(-50%, -50%, 0) scale(var(--abertura-scale));
+  width: 22%;
+  height: 10px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #3c414b, #23272e);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 2px 4px rgba(0, 0, 0, 0.45);
+  transform: translateX(-50%);
+}
+
+.abertura.is-aberta .abertura-persiana {
+  transform: translateY(-101%);
+}
+
+/* The breather hole at the bottom of the pane. */
+.abertura-respiro {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.32));
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateX(-50%);
+}
+
+/* Cabin: light spilling out of the window, dark corners. */
+.abertura-cabine {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(44% 40% at 50% calc(50% + var(--band-h) / 2), rgba(198, 215, 236, 0.14), rgba(198, 215, 236, 0) 74%),
+    radial-gradient(122% 98% at 50% calc(50% + var(--band-h) / 2), rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.55) 100%);
   pointer-events: none;
 }
 
-/* The pane's reflection. */
-.abertura-janela::after {
+/* A fine grain, so the wall is not a flat field. */
+.abertura-cabine::after {
   content: "";
   position: absolute;
-  inset: 9px;
-  border-radius: inherit;
-  background: linear-gradient(148deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.06) 26%, rgba(255, 255, 255, 0) 46%);
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+
+/* The question sits inside the glass, and only turns up once the shade is out of the way. */
+.abertura-frase {
+  position: absolute;
+  top: calc(var(--band-h) + (100vh - var(--band-h)) / 2);
+  left: 50%;
+  z-index: 3;
+  width: calc(var(--janela-w) - 52px);
+  opacity: 0;
+  transform: translate3d(-50%, calc(-50% + 20px), 0);
+  transition: opacity 1s ease 1.75s, transform 1.3s cubic-bezier(0.22, 1, 0.36, 1) 1.75s;
+  pointer-events: none;
+}
+
+.abertura.is-aberta .abertura-frase {
+  opacity: 1;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.abertura-titulo {
+  opacity: var(--abertura-titulo-opacity);
+  transform: translate3d(0, var(--abertura-titulo-y), 0);
 }
 
 /* Dims the view under the manifesto, and only while it is on screen. */
 .abertura-veu {
   position: absolute;
   inset: 0;
-  z-index: 2;
-  background: radial-gradient(120% 80% at 50% 46%, rgba(4, 8, 16, 0.72), rgba(4, 8, 16, 0.4) 62%, rgba(4, 8, 16, 0.24));
+  z-index: 4;
+  background: radial-gradient(120% 80% at 50% calc(50% + var(--band-h) / 2), rgba(4, 8, 16, 0.74), rgba(4, 8, 16, 0.42) 62%, rgba(4, 8, 16, 0.26));
   opacity: var(--abertura-veu);
   pointer-events: none;
 }
@@ -610,25 +740,15 @@ button {
 .abertura-conteudo {
   position: absolute;
   inset: 0 0 auto;
-  z-index: 3;
+  z-index: 5;
   height: 100vh;
   pointer-events: none;
-}
-
-.abertura-titulo {
-  position: absolute;
-  left: 50%;
-  top: 46%;
-  width: min(760px, calc(100vw - 42px));
-  text-align: center;
-  opacity: var(--abertura-titulo-opacity);
-  transform: translate3d(-50%, calc(-50% + var(--abertura-titulo-y)), 0);
 }
 
 .abertura-manifesto {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: calc(var(--band-h) + (100vh - var(--band-h)) / 2);
   width: min(620px, calc(100vw - 42px));
   text-align: center;
   opacity: var(--abertura-manifesto-opacity);
@@ -922,6 +1042,15 @@ button {
   color: var(--ink);
   text-align: center;
   text-shadow: none;
+}
+
+/* The opening question is set inside the glass, so it follows the window's width. */
+.abertura-titulo {
+  width: 100%;
+  font-size: min(var(--scene-title), calc(var(--janela-w) * 0.11));
+  line-height: 1.04;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .story-panel-bridge {
@@ -1237,5 +1366,17 @@ button {
   .musica-linha > span,
   .musica-linha + .musica-linha > span {
     transform: none;
+  }
+
+  /* The opening: the shade is simply out of the way and the sky holds still. */
+  .abertura-janela,
+  .abertura-ceu,
+  .abertura-reflexo {
+    animation: none;
+  }
+
+  .abertura-persiana,
+  .abertura-frase {
+    transition: none;
   }
 }

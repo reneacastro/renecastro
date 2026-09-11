@@ -8,9 +8,9 @@
   <meta name="robots" content="noindex" />
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/shared/faixa.css?v=2" />
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
   <script>document.documentElement.classList.add("is-loading");</script>
-  <script src="script.js?v=8" defer></script>
+  <script src="script.js?v=9" defer></script>
 </head>
 <body>
   <main class="site-shell">
@@ -36,20 +36,30 @@
           </nav>
         </header>
 
-        <!-- Abertura: a janela antes de Mostar. Usa o mesmo arquivo de céu das camadas de Mostar, então
-             nada novo é baixado, e a cabine em volta é desenhada em CSS. -->
+        <!-- Abertura: a janela que abre a página. O céu é o mesmo arquivo das camadas de Mostar, então
+             nada novo é baixado; cabine, moldura e persiana são desenhadas em CSS. -->
         <section class="abertura" aria-label="Abertura">
-          <div class="abertura-vista" aria-hidden="true">
-            <img class="abertura-ceu" src="img/sky-1920.webp"
-              srcset="img/sky-1280.webp 1280w, img/sky-1920.webp 1920w, img/sky-2560.webp 2560w, img/sky-3840.webp 3840w"
-              sizes="(max-width: 640px) 200vw, 130vw"
-              width="3840" height="2160" alt="" fetchpriority="high" />
+          <div class="abertura-janela" aria-hidden="true">
+            <div class="abertura-vidro">
+              <img class="abertura-ceu" src="img/sky-1920.webp"
+                srcset="img/sky-1280.webp 1280w, img/sky-1920.webp 1920w, img/sky-2560.webp 2560w, img/sky-3840.webp 3840w"
+                sizes="(max-width: 640px) 120vw, 60vw"
+                width="3840" height="2160" alt="" fetchpriority="high" />
+              <div class="abertura-altitude"></div>
+              <div class="abertura-reflexo"></div>
+            </div>
+            <div class="abertura-persiana"></div>
+            <div class="abertura-respiro"></div>
           </div>
-          <div class="abertura-janela" aria-hidden="true"></div>
+
+          <div class="abertura-frase">
+            <h2 class="abertura-titulo">pronto para <br />o seu próximo destino?</h2>
+          </div>
+
+          <div class="abertura-cabine" aria-hidden="true"></div>
           <div class="abertura-veu" aria-hidden="true"></div>
 
           <div class="abertura-conteudo">
-            <h2 class="abertura-titulo">pronto para <br />o seu próximo destino?</h2>
             <div class="abertura-manifesto">
               <p>Nada aqui é comum. Há mais de três décadas, a PRIMETOUR traduz desejos em experiências e viagens que ampliam a percepção do mundo.</p>
               <p>Excelência, cuidado e curadoria em jornadas feitas sob medida, pensadas para permanecer muito depois do retorno.</p>
