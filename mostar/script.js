@@ -8,8 +8,13 @@
   const sightPrev = document.querySelector(".sight-prev");
   const sightNext = document.querySelector(".sight-next");
   const originalSightCards = Array.from(document.querySelectorAll(".sight-card"));
+  const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
+  const openingLayers = Array.from(document.querySelectorAll(".scene-img:not(.frame-two-img)"));
 
-  if (!section || !backStack) return;
+  if (!section || !backStack) {
+    root.classList.remove("is-loading");
+    return;
+  }
 
   let targetMouseX = 0;
   let targetMouseY = 0;
@@ -22,6 +27,7 @@
   let sightCards = [];
   const originalSightCount = originalSightCards.length;
   let activeSight = originalSightCount;
+  let currentScene = "";
 
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
 
@@ -43,6 +49,22 @@
 
   const setVar = (name, value) => {
     root.style.setProperty(name, String(value));
+  };
+
+  // Menu: highlight the scene on stage. Breakpoints sit between the choreography segments,
+  // matching the scroll anchors #inicio (0), #ponte (1100), #bazar (2340), #roteiros (3700).
+  const sceneAt = (s) => (s < 700 ? "inicio" : s < 1700 ? "ponte" : s < 2700 ? "bazar" : "roteiros");
+
+  const updateNav = (s) => {
+    const scene = sceneAt(s);
+    if (scene === currentScene) return;
+    currentScene = scene;
+    navLinks.forEach((link) => {
+      const isCurrent = link.hash === `#${scene}`;
+      link.classList.toggle("is-current", isCurrent);
+      if (isCurrent) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
   };
 
   function requestTick() {
@@ -144,7 +166,7 @@
     setVar("--panel2-y", `calc(-50% + ${-frame2.exit * 86 + (1 - frame2.enter) * 58}px)`);
     setVar("--panel3-opacity", panel3Opacity);
     setVar("--panel3-y", `calc(-50% + ${-frame3.exit * 86 + (1 - frame3.enter) * 58}px)`);
-    // Faded-out panels must not keep catching clicks (the bazaar note button sits over the sight cards).
+    // Faded-out panels must not keep catching clicks (the bazaar link sits over the sight cards).
     setVar("--panel2-visibility", panel2Opacity > 0.01 ? "visible" : "hidden");
     setVar("--panel3-visibility", panel3Opacity > 0.01 ? "visible" : "hidden");
 
@@ -158,6 +180,8 @@
     setVar("--sights-top", `${sightsParentTop}px`);
     setVar("--sights-left", `${sightsParentLeft}px`);
     setVar("--sights-screen-top", `${sightsScreenTop}px`);
+
+    updateNav(smoothScroll);
 
     const scrollSettling = Math.abs(smoothScroll - targetScroll) > 0.08;
     const mouseSettling =
@@ -225,6 +249,13 @@
     });
     updateSightSlider();
   };
+
+  // Fade the scene in once the opening layers are decoded, instead of letting them pop in one by
+  // one. Capped at 3s so a slow or failed image never keeps the page hidden.
+  Promise.race([
+    Promise.all(openingLayers.map((img) => (img.decode ? img.decode().catch(() => {}) : null))),
+    new Promise((resolve) => window.setTimeout(resolve, 3000)),
+  ]).then(() => root.classList.remove("is-loading"));
 
   window.addEventListener("scroll", requestTick, { passive: true });
   window.addEventListener("resize", () => {

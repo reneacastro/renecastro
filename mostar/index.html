@@ -1,123 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mostar city</title>
-  <meta name="description" content="A cinematic three-screen scroll story for Mostar city." />
+  <title>Mostar · Primetour</title>
+  <meta name="description" content="Mostar, na Bósnia e Herzegovina, em três cenas: a Ponte Velha, o bazar e os pontos da cidade velha." />
   <meta name="robots" content="noindex" />
   <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="styles.css?v=3" />
-  <script src="script.js?v=3" defer></script>
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <script>document.documentElement.classList.add("is-loading");</script>
+  <script src="script.js?v=4" defer></script>
 </head>
 <body>
   <main class="site-shell">
-    <section class="cinema-scroll" id="cinema" aria-label="Mostar cinematic scroll story">
+    <section class="cinema-scroll" id="inicio" aria-label="Mostar em três cenas">
+      <span class="scroll-anchor" id="ponte"></span>
+      <span class="scroll-anchor" id="bazar"></span>
+      <span class="scroll-anchor" id="roteiros"></span>
+
       <div class="stage">
         <div class="world">
-          <img class="scene-img sky-img" src="https://raft-blast-61784561.figma.site/_assets/v11/16b5007d9c93971e26ffe4e0e3e37946f6bd538c.png" alt="" />
+          <img class="scene-img sky-img" src="img/sky-1920.webp"
+            srcset="img/sky-1280.webp 1280w, img/sky-1920.webp 1920w, img/sky-2560.webp 2560w, img/sky-3840.webp 3840w"
+            sizes="(max-width: 640px) 200vw, (max-aspect-ratio: 16/9) 177.78vh, 100vw"
+            width="3840" height="2160" alt="" fetchpriority="high" />
 
-          <header class="site-header" aria-label="Primary navigation">
-            <a class="site-logo" href="#cinema">Bosnia and Herzegovina</a>
-            <nav class="site-nav" aria-label="Main menu">
-              <a href="#cinema">Intro</a>
-              <a href="#bridge">Bridge</a>
-              <a href="#bazaar">Bazaar</a>
-              <a href="#routes">Routes</a>
+          <header class="site-header" aria-label="Navegação principal">
+            <a class="site-logo" href="#inicio">
+              <img src="img/primetour-logo-branco.webp" width="500" height="141" alt="Primetour Viagens &amp; Experiências" />
+            </a>
+            <nav class="site-nav" aria-label="Cenas">
+              <a href="#inicio">Início</a>
+              <a href="#ponte">Ponte</a>
+              <a href="#bazar">Bazar</a>
+              <a href="#roteiros">Roteiros</a>
             </nav>
-            <button class="language-switcher" type="button" aria-label="Change language">
-              <span>EN</span>
-              <span aria-hidden="true">⌄</span>
-            </button>
           </header>
 
           <div class="back-stack">
-            <img class="scene-img back-img back-four" src="https://raft-blast-61784561.figma.site/_assets/v11/8a7f8af50e0ce92ec2e228e7b0b4112178c51cf1.png" alt="" />
+            <img class="scene-img back-img back-four" src="img/four-1920.webp"
+              srcset="img/four-1280.webp 1280w, img/four-1920.webp 1920w, img/four-2560.webp 2560w, img/four-3840.webp 3840w"
+              sizes="(max-width: 640px) 420vw, 130vw"
+              width="3840" height="2160" alt="" />
 
-            <section class="sights-slider" aria-label="Mostar sights slider">
+            <section class="sights-slider" aria-label="Pontos da cidade velha">
               <div class="sights-track">
-                <article class="sight-card" tabindex="0" role="button" aria-label="Open Stari Most card">
-                  <span class="sight-kicker">Old Bridge</span>
-                  <img class="sight-pin" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260730_230438_d526b8b6-8a2e-4e3b-9993-3908acae03a7.png" alt="" />
+                <article class="sight-card" tabindex="0" role="button" aria-label="Destacar Stari Most">
+                  <span class="sight-kicker">Ponte Velha</span>
+                  <img class="sight-pin" src="img/pin-1-144.webp" srcset="img/pin-1-144.webp 144w, img/pin-1-216.webp 216w" sizes="68px" width="144" height="144" alt="" />
                   <h3>Stari Most</h3>
-                  <p>The stone arch over the Neretva and Mostar's main landmark.</p>
+                  <p>O arco de pedra sobre o Neretva, símbolo de Mostar.</p>
                 </article>
-                <article class="sight-card" tabindex="0" role="button" aria-label="Open Kujundziluk card">
-                  <span class="sight-kicker">Bazaar Street</span>
-                  <img class="sight-pin" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260730_230442_140bc25b-b165-4249-904a-f708bff6970e.png" alt="" />
-                  <h3>Kujundziluk</h3>
-                  <p>Copper shops, souvenirs, and the old bazaar lane by the bridge.</p>
+                <article class="sight-card" tabindex="0" role="button" aria-label="Destacar Kujundžiluk">
+                  <span class="sight-kicker">Rua do bazar</span>
+                  <img class="sight-pin" src="img/pin-2-144.webp" srcset="img/pin-2-144.webp 144w, img/pin-2-216.webp 216w" sizes="68px" width="144" height="144" alt="" />
+                  <h3>Kujundžiluk</h3>
+                  <p>Cobre, suvenires e a antiga rua do bazar, junto à ponte.</p>
                 </article>
-                <article class="sight-card" tabindex="0" role="button" aria-label="Open Koski Mehmed Pasha Mosque card">
-                  <span class="sight-kicker">Viewpoint</span>
-                  <img class="sight-pin" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260730_230448_825949c9-ccdb-4857-b4a6-e349eccc9010.png" alt="" />
-                  <h3>Koski Mehmed Pasha Mosque</h3>
-                  <p>A classic minaret view back toward Stari Most and the river.</p>
+                <article class="sight-card" tabindex="0" role="button" aria-label="Destacar Mesquita Koski">
+                  <span class="sight-kicker">Mirante</span>
+                  <img class="sight-pin" src="img/pin-3-144.webp" srcset="img/pin-3-144.webp 144w, img/pin-3-216.webp 216w" sizes="68px" width="144" height="144" alt="" />
+                  <h3>Mesquita Koski</h3>
+                  <p>Do minarete, a vista clássica da Stari Most e do rio.</p>
                 </article>
-                <article class="sight-card" tabindex="0" role="button" aria-label="Open Kajtaz House card">
-                  <span class="sight-kicker">Ottoman House</span>
-                  <img class="sight-pin" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260730_230438_d526b8b6-8a2e-4e3b-9993-3908acae03a7.png" alt="" />
-                  <h3>Kajtaz House</h3>
-                  <p>A preserved residential house showing Mostar's Ottoman layers.</p>
+                <article class="sight-card" tabindex="0" role="button" aria-label="Destacar Casa Kajtaz">
+                  <span class="sight-kicker">Casa otomana</span>
+                  <img class="sight-pin" src="img/pin-1-144.webp" srcset="img/pin-1-144.webp 144w, img/pin-1-216.webp 216w" sizes="68px" width="144" height="144" alt="" />
+                  <h3>Casa Kajtaz</h3>
+                  <p>Casa preservada que mostra a Mostar otomana.</p>
                 </article>
-                <article class="sight-card" tabindex="0" role="button" aria-label="Open War Photo Exhibition card">
-                  <span class="sight-kicker">Museum</span>
-                  <img class="sight-pin" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260730_230442_140bc25b-b165-4249-904a-f708bff6970e.png" alt="" />
+                <article class="sight-card" tabindex="0" role="button" aria-label="Destacar War Photo Exhibition">
+                  <span class="sight-kicker">Museu</span>
+                  <img class="sight-pin" src="img/pin-2-144.webp" srcset="img/pin-2-144.webp 144w, img/pin-2-216.webp 216w" sizes="68px" width="144" height="144" alt="" />
                   <h3>War Photo Exhibition</h3>
-                  <p>A compact, moving stop for context on the city's recent history.</p>
+                  <p>Uma parada marcante sobre a história recente da cidade.</p>
                 </article>
               </div>
             </section>
 
-            <img class="scene-img back-img back-bazaar" src="https://raft-blast-61784561.figma.site/_assets/v11/864afe00e41e2fa20a5aa546e15cb807e0f81384.png" alt="" />
+            <img class="scene-img back-img back-bazaar" src="img/bazaar-1920.webp"
+              srcset="img/bazaar-1280.webp 1280w, img/bazaar-1920.webp 1920w, img/bazaar-2560.webp 2560w, img/bazaar-3840.webp 3840w"
+              sizes="(max-width: 640px) 320vw, 130vw"
+              width="3840" height="2160" alt="" />
           </div>
 
-          <div class="sights-controls" aria-label="Slider controls">
-            <button class="sight-nav sight-prev" type="button" aria-label="Previous sight">←</button>
-            <button class="sight-nav sight-next" type="button" aria-label="Next sight">→</button>
+          <div class="sights-controls" role="group" aria-label="Controles dos pontos">
+            <button class="sight-nav sight-prev" type="button" aria-label="Ponto anterior">←</button>
+            <button class="sight-nav sight-next" type="button" aria-label="Próximo ponto">→</button>
           </div>
 
           <h1 class="hero-title">MOSTAR</h1>
 
-          <img class="scene-img splitframe-img splitframe-left" src="https://raft-blast-61784561.figma.site/_assets/v11/7536d7b60a1fce482cf6edf3f0bffd3bad5d0f8a.png" alt="" />
-          <img class="scene-img splitframe-img splitframe-right" src="https://raft-blast-61784561.figma.site/_assets/v11/392db6a6a6b98e868bd7f8d3f55bb719d51e5028.png" alt="" />
-          <img class="scene-img bridge-img" src="https://raft-blast-61784561.figma.site/_assets/v11/c6a6d8ef49bca43f708aa852692942c45ec950d4.png" alt="" />
-          <img class="scene-img frame-two-img" src="https://raft-blast-61784561.figma.site/_assets/v11/ba75252bab2b1c510987b74837770f7bc8a6b2d4.png" alt="" />
+          <img class="scene-img splitframe-img splitframe-left" src="img/split-left-1920.webp"
+            srcset="img/split-left-1280.webp 1280w, img/split-left-1920.webp 1920w, img/split-left-2880.webp 2880w"
+            sizes="(max-width: 640px) 200vw, 118vw"
+            width="2880" height="1620" alt="" fetchpriority="high" />
+          <img class="scene-img splitframe-img splitframe-right" src="img/split-right-1920.webp"
+            srcset="img/split-right-1280.webp 1280w, img/split-right-1920.webp 1920w, img/split-right-2880.webp 2880w"
+            sizes="(max-width: 640px) 200vw, 118vw"
+            width="2880" height="1620" alt="" fetchpriority="high" />
+          <img class="scene-img bridge-img" src="img/bridge-1920.webp"
+            srcset="img/bridge-1280.webp 1280w, img/bridge-1920.webp 1920w, img/bridge-2880.webp 2880w"
+            sizes="(max-width: 640px) 240vw, 105vw"
+            width="2880" height="1620" alt="" fetchpriority="high" />
+          <img class="scene-img frame-two-img" src="img/river-1920.webp"
+            srcset="img/river-1280.webp 1280w, img/river-1920.webp 1920w, img/river-2560.webp 2560w, img/river-3840.webp 3840w"
+            sizes="(max-width: 640px) 200vw, (max-width: 1100px) 132vw, 122vw"
+            width="3854" height="2160" alt="" fetchpriority="low" />
 
           <div class="shade"></div>
         </div>
 
-        <section class="intro-copy" aria-label="Mostar overview">
-          <p>A stone arch, emerald water, and a compact old city made for slow mornings, late light, and one unforgettable crossing.</p>
-          <div class="hero-tags" aria-label="Mostar highlights">
-            <span>Old Bridge</span>
-            <span>Neretva River</span>
-            <span>UNESCO old city</span>
+        <section class="intro-copy" aria-label="Sobre Mostar">
+          <p>Um arco de pedra, águas cor de esmeralda e um centro histórico compacto, feito para manhãs sem pressa, a luz do fim de tarde e uma travessia inesquecível.</p>
+          <div class="hero-tags" aria-label="Destaques de Mostar">
+            <span>Ponte Velha</span>
+            <span>Rio Neretva</span>
+            <span>Patrimônio da UNESCO</span>
           </div>
         </section>
 
-        <section class="story-panel story-panel-bridge" aria-label="Old Bridge details">
-          <h2>The bridge is the city's compass.</h2>
-          <p>Stari Most links the banks of the Neretva and anchors a historic quarter shaped by Ottoman, Mediterranean, and European layers.</p>
+        <section class="story-panel story-panel-bridge" aria-label="A Ponte Velha">
+          <h2>A ponte é a bússola da cidade.</h2>
+          <p>A Stari Most liga as margens do Neretva e ancora um bairro histórico moldado por camadas otomanas, mediterrâneas e europeias.</p>
           <dl class="facts">
             <div>
               <dt>1566</dt>
-              <dd>Original bridge completed</dd>
+              <dd>Conclusão da ponte original</dd>
             </div>
             <div>
               <dt>2005</dt>
-              <dd>Old Bridge Area inscribed by UNESCO</dd>
+              <dd>Área da Ponte Velha declarada Patrimônio Mundial</dd>
             </div>
           </dl>
         </section>
 
-        <section class="story-panel story-panel-bazaar" aria-label="Old town details">
-          <h2>The bazaar keeps Mostar close.</h2>
-          <p>Stone lanes, mosque courtyards, copper stalls, and riverside coffee stay within a short walk of Stari Most.</p>
-          <button class="note-button" type="button">
-            <span aria-hidden="true">↗</span>
-            <span>Open old town notes</span>
-          </button>
+        <section class="story-panel story-panel-bazaar" aria-label="A cidade velha">
+          <h2>O bazar mantém Mostar por perto.</h2>
+          <p>Vielas de pedra, pátios de mesquitas, bancas de cobre e cafés à beira do rio ficam a poucos passos da Stari Most.</p>
+          <a class="note-button" href="#roteiros">
+            <span aria-hidden="true">↓</span>
+            <span>Ver pontos da cidade velha</span>
+          </a>
         </section>
       </div>
     </section>

@@ -64,6 +64,13 @@
   --ink: #111411;
   --paper: #fdf1e1;
   --shadow: rgba(0, 0, 0, 0.32);
+  /* Primetour: "o azul da marca" e o dourado (--brand-gold do tema escuro) do Gestor, css/base.css */
+  --brand-blue: #242362;
+  --brand-gold: #e0c588;
+  --band-text: rgba(255, 255, 255, 0.84);
+  --band-h: 64px;
+  --logo-h: 38px;
+  --sky-fallback: #79b7dd;
   font-family: Inter, Satoshi, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--paper);
   background: #0b1110;
@@ -103,6 +110,27 @@ button {
   height: calc(100vh + 3700px);
 }
 
+/* Menu targets: the scroll distance where each scene is fully on stage (script.js uses the same map). */
+.scroll-anchor {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+#ponte {
+  top: 1100px;
+}
+
+#bazar {
+  top: 2340px;
+}
+
+#roteiros {
+  top: 3700px;
+}
+
 /* overflow: clip (not just hidden) so focusing an off-screen card can't scroll the scene sideways. */
 .stage {
   position: sticky;
@@ -113,6 +141,23 @@ button {
   overflow: clip;
   isolation: isolate;
   background: #7fb4d4;
+}
+
+/* Opening fade: covers the photo layers until script.js has them decoded (capped at 3s). The band,
+   intro copy and panels sit above it, so text shows right away. */
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  background: var(--sky-fallback);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms ease;
+}
+
+.is-loading .stage::after {
+  opacity: 1;
 }
 
 .world,
@@ -133,72 +178,83 @@ button {
   inset: 0;
   overflow: hidden;
   overflow: clip;
-  background: #79b7dd;
+  background: var(--sky-fallback);
 }
 
-/* Header */
+/* Header: faixa azul Primetour com o menu de cenas */
 
 .site-header {
-  z-index: 10;
+  z-index: 20;
   top: 0;
   left: 0;
   right: 0;
-  display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto minmax(260px, 1fr);
+  height: var(--band-h);
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 32px;
-  padding: 32px;
-  color: rgba(253, 241, 225, 0.86);
+  padding: 0 40px;
+  background: var(--brand-blue);
   pointer-events: auto;
 }
 
 .site-logo {
-  justify-self: start;
-  color: rgba(253, 241, 225, 0.92);
-  font-family: "Ogg Medium", Georgia, "Times New Roman", serif;
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
+  display: flex;
+  flex: 0 0 auto;
+  border-radius: 4px;
+}
+
+.site-logo img {
+  display: block;
+  width: auto;
+  height: var(--logo-h);
 }
 
 .site-nav {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: clamp(24px, 2.2vw, 44px);
-}
-
-.site-nav a,
-.language-switcher {
-  color: rgba(253, 241, 225, 0.86);
-  font-weight: 700;
-  line-height: 1;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+  gap: clamp(24px, 2.6vw, 40px);
 }
 
 .site-nav a {
-  font-size: 20px;
-  font-weight: 400;
-  text-decoration: none;
-}
-
-.language-switcher {
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0;
-  background: transparent;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.language-switcher span {
-  display: inline-flex;
+  position: relative;
+  padding: 8px 0;
+  color: var(--band-text);
+  font-size: 15px;
+  font-weight: 500;
   line-height: 1;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 200ms ease;
+}
+
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand-gold);
+  transform: scaleX(0);
+  transition: transform 240ms ease;
+}
+
+.site-nav a:hover,
+.site-nav a.is-current {
+  color: var(--brand-gold);
+}
+
+.site-nav a.is-current::after {
+  transform: scaleX(1);
+}
+
+.site-logo:focus-visible,
+.site-nav a:focus-visible {
+  outline: 2px solid var(--brand-gold);
+  outline-offset: 4px;
 }
 
 /* Scene layers */
@@ -617,6 +673,7 @@ button {
   color: var(--ink);
   background: #fdf1e1;
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+  text-decoration: none;
   pointer-events: auto;
   cursor: pointer;
 }
@@ -671,20 +728,37 @@ button {
   }
 }
 
-/* The prompt's three-column header needs ~940px; below that the language switcher was pushed
-   off-screen (tablet portrait). Its own two-row header (originally ≤640px) now starts here. */
-@media (max-width: 960px) {
-  .site-header {
-    grid-template-columns: 1fr auto;
-    gap: 18px;
-    padding: 24px;
+/* Portrait tablets: the phone fix, milder — bigger mountains and town so the slider scene isn't
+   half empty sky. */
+@media (min-width: 641px) and (max-width: 1100px) and (orientation: portrait) {
+  .back-bazaar {
+    width: 170%;
   }
 
+  .back-four {
+    width: 230%;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --band-h: 56px;
+    --logo-h: 30px;
+  }
+
+  .stage {
+    min-height: 640px;
+  }
+
+  .site-header {
+    gap: 16px;
+    padding: 0 16px;
+  }
+
+  /* All four scenes stay in one row inside the band; if a very narrow screen can't fit them, the
+     row scrolls sideways instead of wrapping. */
   .site-nav {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-content: flex-start;
-    gap: 18px;
+    gap: 14px;
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -692,11 +766,10 @@ button {
   .site-nav::-webkit-scrollbar {
     display: none;
   }
-}
 
-@media (max-width: 640px) {
-  .stage {
-    min-height: 640px;
+  .site-nav a {
+    font-size: 14px;
+    letter-spacing: 0;
   }
 
   .hero-title {
@@ -704,17 +777,35 @@ button {
     font-size: 4.5rem;
   }
 
+  /* Portrait composition: the prompt sized every layer by width, so on a phone the whole scene
+     shrank into a strip at the bottom under empty sky. Bigger, higher layers fill the frame. */
   .bridge-img {
-    bottom: 2vh;
-    width: 190vw;
+    bottom: 10vh;
+    width: 220vw;
+  }
+
+  .splitframe-img {
+    width: 150vw;
+  }
+
+  .back-bazaar,
+  .back-four {
+    width: 300%;
+  }
+
+  /* Mountains a size larger (same bottom anchor): their peaks fill the arch instead of leaving a
+     band of empty sky in it, while their lower edge stays hidden behind the town. */
+  .back-four {
+    width: 400%;
   }
 
   .frame-two-img {
     width: 176vw;
   }
 
+  /* Clear of the bottom toolbar Safari keeps over the page on iPhone. */
   .intro-copy {
-    bottom: 42px;
+    bottom: 96px;
   }
 
   .intro-copy p,
@@ -732,12 +823,13 @@ button {
     font-size: 0.88rem;
   }
 
+  /* Panels sit lower so the text is centred on the phone instead of hanging under the band. */
   .story-panel {
-    top: 42%;
+    top: 46%;
   }
 
   .story-panel-bazaar {
-    top: 26%;
+    top: 32%;
   }
 
   .story-panel h2 {
@@ -791,6 +883,36 @@ button {
     right: 24px;
     width: 57.6px;
     height: 57.6px;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --logo-h: 26px;
+  }
+
+  .site-header {
+    gap: 12px;
+    padding: 0 12px;
+  }
+
+  .site-nav {
+    gap: 11px;
+  }
+
+  .site-nav a {
+    font-size: 13px;
+  }
+
+  /* Narrow phones: card titles use the full width (they sit below the pin) and a size down, so
+     "War Photo Exhibition" and the two-line descriptions still fit. */
+  .sight-card h3 {
+    max-width: 100%;
+    font-size: 21px;
+  }
+
+  .sight-card p {
+    font-size: 15px;
   }
 }
 
