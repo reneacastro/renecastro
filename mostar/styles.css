@@ -2,7 +2,7 @@
  * Display face: the prompt's Ogg Text file (dcym8fthxf5uu.cloudfront.net/fonts/.../OggText-Medium.woff2) is served
  * without Access-Control-Allow-Origin, so browsers block it on any other origin. "Ogg Medium" stays first in the
  * stacks below and Georgia renders until a licensed, CORS-enabled copy is hosted.
- * The blue Primetour band (header) lives in /shared/faixa.css, shared with the other test pages.
+ * The blue Primetour band (header) lives in /shared/faixa.css.
  */
 
 :root {
@@ -62,6 +62,20 @@
   --sights-top: clamp(112px, 19vh, 220px);
   --sights-screen-top: clamp(112px, 19vh, 220px);
   --sights-left: 0px;
+  /* Roteiros → Trem (script.js): Mostar zooms and blurs away, the carriage settles in. */
+  --world-scale: 1;
+  --world-filter: none;
+  --world-opacity: 1;
+  --world-visibility: visible;
+  --trem-opacity: 0;
+  --trem-visibility: hidden;
+  --trem-filter: none;
+  --trem-bg-scale: 1.18;
+  --trem-frame-scale: 1.6;
+  --trem-text-opacity: 0;
+  --trem-text-y: 24px;
+  --trem-escuro: #182c41; /* "Mata fechada": the train prompt darkens the copy on that bright footage */
+  --trem-parapeito: 22vh; /* wall under the window: the window image ends at ~78% of the screen */
   --ink: #111411;
   --paper: #fdf1e1;
   --shadow: rgba(0, 0, 0, 0.32);
@@ -102,7 +116,7 @@ button {
 
 .cinema-scroll {
   position: relative;
-  height: calc(100vh + 3700px);
+  height: calc(100vh + 5300px);
 }
 
 /* Menu targets: the scroll distance where each scene is fully on stage (script.js uses the same map). */
@@ -124,6 +138,10 @@ button {
 
 #roteiros {
   top: 3700px;
+}
+
+#trem {
+  top: 5300px;
 }
 
 /* overflow: clip (not just hidden) so focusing an off-screen card can't scroll the scene sideways. */
@@ -173,6 +191,17 @@ button {
   overflow: hidden;
   overflow: clip;
   background: var(--sky-fallback);
+  opacity: var(--world-opacity);
+  visibility: var(--world-visibility);
+  filter: var(--world-filter);
+  transform: scale(var(--world-scale));
+  transform-origin: 50% 50%;
+}
+
+/* Leaving for the train: the cards and arrows stop taking clicks while they blur away. */
+.stage.is-leaving .sights-slider,
+.stage.is-leaving .sights-controls {
+  pointer-events: none;
 }
 
 /* Scene layers */
@@ -463,6 +492,131 @@ button {
   );
 }
 
+/* Trem: the scene after Roteiros. The footage settles from slightly closer and the window frame
+   from much closer, so the carriage reads as arriving around the viewer. */
+
+.trem-cena {
+  --trem-ink: var(--paper);
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  overflow: hidden;
+  overflow: clip;
+  opacity: var(--trem-opacity);
+  visibility: var(--trem-visibility);
+  filter: var(--trem-filter);
+}
+
+.trem-cena.is-escuro {
+  --trem-ink: var(--trem-escuro);
+}
+
+.trem-paisagens,
+.trem-janela-quadro {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 42%;
+}
+
+.trem-paisagens {
+  transform: scale(var(--trem-bg-scale));
+}
+
+.trem-janela-quadro {
+  z-index: 1;
+  transform: scale(var(--trem-frame-scale));
+  pointer-events: none;
+}
+
+.trem-video,
+.trem-janela {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trem-video {
+  opacity: 0;
+  transition: opacity 1000ms ease-in-out;
+}
+
+.trem-video.is-active {
+  opacity: 1;
+}
+
+/* The window rocks with the carriage; scale(1.03) keeps its edges off-screen while it moves. */
+.trem-janela {
+  transform: translateY(0) scale(1.03);
+  animation: trem-bob 3s ease-in-out infinite;
+}
+
+@keyframes trem-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.03);
+  }
+
+  50% {
+    transform: translateY(-6px) scale(1.03);
+  }
+}
+
+.trem-conteudo {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--band-h) + 24px) 20px calc(var(--trem-parapeito) + 16px);
+  text-align: center;
+  opacity: var(--trem-text-opacity);
+  transform: translate3d(0, var(--trem-text-y), 0);
+}
+
+.trem-cenas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 14px;
+  margin-top: 28px;
+  pointer-events: none;
+}
+
+.trem-cena.is-ready .trem-cenas {
+  pointer-events: auto;
+}
+
+.trem-cenas button {
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: var(--trem-ink);
+  font-size: 12px;
+  font-weight: 500;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity 200ms ease, color 700ms ease, border-color 700ms ease;
+}
+
+.trem-cenas button:hover {
+  opacity: 0.85;
+}
+
+.trem-cenas button.is-active {
+  opacity: 1;
+  border-bottom-color: currentColor;
+}
+
+.trem-cenas button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
 /* Copy */
 
 .intro-copy {
@@ -519,7 +673,9 @@ button {
   will-change: transform, opacity;
 }
 
-.story-panel h2 {
+/* Scene headings and copy share one type style, the train scene included. */
+.story-panel h2,
+.trem-titulo {
   margin: 0;
   color: #fdf1e1;
   font-family: "Ogg Medium", Georgia, "Times New Roman", serif;
@@ -529,7 +685,8 @@ button {
   text-shadow: 0 16px 38px var(--shadow);
 }
 
-.story-panel p {
+.story-panel p,
+.trem-texto {
   width: min(520px, 100%);
   margin: 26px auto 0;
   color: #fdf1e1;
@@ -537,6 +694,18 @@ button {
   font-weight: 500;
   line-height: 1.18;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
+}
+
+.trem-titulo,
+.trem-texto {
+  color: var(--trem-ink);
+  transition: color 700ms ease, text-shadow 700ms ease;
+}
+
+.trem-cena.is-escuro .trem-titulo,
+.trem-cena.is-escuro .trem-texto,
+.trem-cena.is-escuro .trem-cenas button {
+  text-shadow: none;
 }
 
 .story-panel-bridge {
@@ -608,7 +777,8 @@ button {
     font-size: 11rem;
   }
 
-  .story-panel h2 {
+  .story-panel h2,
+  .trem-titulo {
     font-size: 4.1rem;
   }
 }
@@ -627,7 +797,8 @@ button {
     width: 132vw;
   }
 
-  .story-panel h2 {
+  .story-panel h2,
+  .trem-titulo {
     font-size: 3.2rem;
   }
 
@@ -655,6 +826,17 @@ button {
 
   .back-four {
     width: 230%;
+  }
+}
+
+@media (min-width: 641px) {
+  .trem-cenas {
+    gap: 8px 28px;
+    margin-top: 32px;
+  }
+
+  .trem-cenas button {
+    font-size: 13px;
   }
 }
 
@@ -700,7 +882,8 @@ button {
   }
 
   .intro-copy p,
-  .story-panel p {
+  .story-panel p,
+  .trem-texto {
     font-size: 1rem;
   }
 
@@ -723,8 +906,18 @@ button {
     top: 32%;
   }
 
-  .story-panel h2 {
+  .story-panel h2,
+  .trem-titulo {
     font-size: 2.45rem;
+  }
+
+  /* The train heading is longer than the others: on a phone it wraps freely, balanced. */
+  .trem-titulo {
+    text-wrap: balance;
+  }
+
+  .trem-titulo br {
+    display: none;
   }
 
   .facts {
@@ -778,7 +971,7 @@ button {
 }
 
 /* Narrow phones: card titles use the full width (they sit below the pin) and a size down, so
-   "War Photo Exhibition" and the two-line descriptions still fit. */
+   "War Photo Exhibition" and the two-line descriptions still fit; the four landscapes go 2 × 2. */
 @media (max-width: 380px) {
   .sight-card h3 {
     max-width: 100%;
@@ -787,6 +980,15 @@ button {
 
   .sight-card p {
     font-size: 15px;
+  }
+}
+
+@media (max-width: 359px) {
+  .trem-cenas {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    gap: 8px 24px;
   }
 }
 
@@ -801,7 +1003,12 @@ button {
   .intro-copy,
   .story-panel,
   .sights-track,
-  .sights-slider {
+  .sights-slider,
+  .trem-video {
     transition: none;
+  }
+
+  .trem-janela {
+    animation: none;
   }
 }

@@ -4,40 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mostar · Primetour</title>
-  <meta name="description" content="Mostar, na Bósnia e Herzegovina, em três cenas: a Ponte Velha, o bazar e os pontos da cidade velha." />
+  <meta name="description" content="Mostar, na Bósnia e Herzegovina, em cenas: a Ponte Velha, o bazar, os pontos da cidade velha e a viagem de trem." />
   <meta name="robots" content="noindex" />
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/shared/faixa.css?v=1" />
-  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="styles.css?v=6" />
   <script>document.documentElement.classList.add("is-loading");</script>
-  <script src="script.js?v=4" defer></script>
+  <script src="script.js?v=5" defer></script>
 </head>
 <body>
   <main class="site-shell">
-    <section class="cinema-scroll" id="inicio" aria-label="Mostar em três cenas">
+    <section class="cinema-scroll" id="inicio" aria-label="Mostar em cenas">
       <span class="scroll-anchor" id="ponte"></span>
       <span class="scroll-anchor" id="bazar"></span>
       <span class="scroll-anchor" id="roteiros"></span>
+      <span class="scroll-anchor" id="trem"></span>
 
       <div class="stage">
+        <header class="site-header" aria-label="Navegação principal">
+          <a class="site-logo" href="#inicio">
+            <img src="/shared/primetour-logo-branco.webp" width="500" height="141" alt="Primetour Viagens &amp; Experiências" />
+          </a>
+          <nav class="site-nav" aria-label="Menu principal">
+            <a href="#inicio">Início</a>
+            <a href="#ponte">Ponte</a>
+            <a href="#bazar">Bazar</a>
+            <a href="#roteiros">Roteiros</a>
+            <a href="#trem">Trem</a>
+          </nav>
+        </header>
+
         <div class="world">
           <img class="scene-img sky-img" src="img/sky-1920.webp"
             srcset="img/sky-1280.webp 1280w, img/sky-1920.webp 1920w, img/sky-2560.webp 2560w, img/sky-3840.webp 3840w"
             sizes="(max-width: 640px) 200vw, (max-aspect-ratio: 16/9) 177.78vh, 100vw"
             width="3840" height="2160" alt="" fetchpriority="high" />
-
-          <header class="site-header" aria-label="Navegação principal">
-            <a class="site-logo" href="#inicio">
-              <img src="/shared/primetour-logo-branco.webp" width="500" height="141" alt="Primetour Viagens &amp; Experiências" />
-            </a>
-            <nav class="site-nav" aria-label="Menu principal">
-              <a href="#inicio">Início</a>
-              <a href="#ponte">Ponte</a>
-              <a href="#bazar">Bazar</a>
-              <a href="#roteiros">Roteiros</a>
-              <a href="/trem/">Trem</a>
-            </nav>
-          </header>
 
           <div class="back-stack">
             <img class="scene-img back-img back-four" src="img/four-1920.webp"
@@ -112,6 +113,47 @@
 
           <div class="shade"></div>
         </div>
+
+        <!-- Trem: after Roteiros. Posters, window and footage load only once the visitor reaches
+             Roteiros (script.js); only the chosen landscape downloads. -->
+        <section class="trem-cena" aria-label="A viagem de trem">
+          <div class="trem-paisagens" aria-hidden="true">
+            <video class="trem-video is-active" muted loop playsinline preload="none" data-poster="trem/hora-dourada.webp">
+              <source src="trem/hora-dourada-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+              <source src="trem/hora-dourada-1080.mp4" type="video/mp4" />
+            </video>
+            <video class="trem-video" muted loop playsinline preload="none" data-poster="trem/aguas-calmas.webp">
+              <source src="trem/aguas-calmas-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+              <source src="trem/aguas-calmas-1080.mp4" type="video/mp4" />
+            </video>
+            <video class="trem-video" muted loop playsinline preload="none" data-poster="trem/mata-fechada.webp">
+              <source src="trem/mata-fechada-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+              <source src="trem/mata-fechada-1080.mp4" type="video/mp4" />
+            </video>
+            <video class="trem-video" muted loop playsinline preload="none" data-poster="trem/aurora.webp">
+              <source src="trem/aurora-720.mp4" type="video/mp4" media="(max-width: 767px)" />
+              <source src="trem/aurora-1080.mp4" type="video/mp4" />
+            </video>
+          </div>
+
+          <div class="trem-janela-quadro" aria-hidden="true">
+            <img class="trem-janela" alt="" width="2752" height="1536"
+              data-src="trem/janela-1920.webp"
+              data-srcset="trem/janela-1280.webp 1280w, trem/janela-1920.webp 1920w, trem/janela-2752.webp 2752w"
+              sizes="(max-aspect-ratio: 16/9) 180vh, 103vw" />
+          </div>
+
+          <div class="trem-conteudo">
+            <h2 class="trem-titulo">Clareza em um universo <br />infinitamente ruidoso</h2>
+            <p class="trem-texto">Eleve-se acima do caos das notificações, da rolagem infinita e das demandas sem fim. Descubra como proteger sua presença e criar com intenção.</p>
+            <div class="trem-cenas" role="group" aria-label="Paisagem pela janela">
+              <button type="button" class="is-active" aria-pressed="true">Hora dourada</button>
+              <button type="button" aria-pressed="false">Águas calmas</button>
+              <button type="button" aria-pressed="false">Mata fechada</button>
+              <button type="button" aria-pressed="false">Aurora</button>
+            </div>
+          </div>
+        </section>
 
         <section class="intro-copy" aria-label="Sobre Mostar">
           <p>Um arco de pedra, águas cor de esmeralda e um centro histórico compacto, feito para manhãs sem pressa, a luz do fim de tarde e uma travessia inesquecível.</p>
