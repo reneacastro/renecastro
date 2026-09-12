@@ -10,7 +10,7 @@
   const sightNext = document.querySelector(".sight-next");
   const originalSightCards = Array.from(document.querySelectorAll(".sight-card"));
   const navLinks = Array.from(document.querySelectorAll(".site-nav a"));
-  const openingLayers = Array.from(document.querySelectorAll(".scene-img:not(.frame-two-img)"));
+  const openingLayers = Array.from(document.querySelectorAll(".scene-img:not(.frame-two-img), .abertura-foto"));
   const trainScene = document.querySelector(".trem-cena");
   const trainVideo = document.querySelector(".trem-video");
   const trainWindow = document.querySelector(".trem-janela");
@@ -306,7 +306,6 @@
     setVar("--abertura-janela-opacity", 1 - openSky);
     setVar("--abertura-vidro", 1 - openSky);
     setVar("--abertura-ceu-cheio", openSky);
-    setVar("--abertura-cabine", 1 - openSky);
     setVar("--abertura-filter", openBlur > 0.05 ? `blur(${openBlur}px)` : "none");
     setVar("--abertura-titulo-opacity", 1 - openTitleOut);
     setVar("--abertura-titulo-y", `${openTitleOut * -70 * motion}px`);
