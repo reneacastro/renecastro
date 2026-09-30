@@ -1,1 +1,0 @@
-function e(e){return e.normalize(`NFD`).replace(/[̀-ͯ]/g,``).toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,` `).replace(/\s+/g,` `).trim()}function t(t,n){let r=e(t).split(` `).filter(Boolean);if(r.length===0)return!0;let i=e(n.filter(Boolean).join(` `)),a=n.filter(Boolean).join(` `);return r.every(e=>i.includes(e)||a.includes(e))}export{t};
